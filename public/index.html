@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI YouTube Assistant — Erika Vieira</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Auth Screen -->
+    <div id="auth-screen" class="screen active">
+      <div class="auth-container">
+        <div class="auth-brand">
+          <h1 class="brand-logo">AI YouTube Assistant</h1>
+          <p class="brand-tagline">by Erika Vieira — YouTube Channel Producer & Strategist</p>
+          <p class="brand-description">Discover your Why, define your Niche, profile your True Fan, craft your Mission, and walk away with a professional Brand Blueprint.</p>
+        </div>
+        <div class="auth-card">
+          <div class="auth-tabs">
+            <button class="auth-tab active" data-tab="login">Sign In</button>
+            <button class="auth-tab" data-tab="register">Create Account</button>
+          </div>
+
+          <form id="login-form" class="auth-form active">
+            <div class="form-group">
+              <label for="login-email">Email</label>
+              <input type="email" id="login-email" placeholder="you@example.com" required>
+            </div>
+            <div class="form-group">
+              <label for="login-password">Password</label>
+              <input type="password" id="login-password" placeholder="Your password" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">Sign In</button>
+            <p class="auth-error" id="login-error"></p>
+          </form>
+
+          <form id="register-form" class="auth-form">
+            <div class="form-group">
+              <label for="register-name">Your Name</label>
+              <input type="text" id="register-name" placeholder="Your first name" required>
+            </div>
+            <div class="form-group">
+              <label for="register-email">Email</label>
+              <input type="email" id="register-email" placeholder="you@example.com" required>
+            </div>
+            <div class="form-group">
+              <label for="register-password">Password</label>
+              <input type="password" id="register-password" placeholder="Create a password (8+ characters)" required minlength="8">
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">Create Account</button>
+            <p class="auth-error" id="register-error"></p>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main App Screen -->
+    <div id="app-screen" class="screen">
+      <!-- Sidebar -->
+      <nav id="sidebar">
+        <div class="sidebar-brand">
+          <h2>AI YouTube<br>Assistant</h2>
+          <p class="sidebar-user" id="user-name"></p>
+        </div>
+        <ul class="step-nav">
+          <li class="step-item" data-step="1">
+            <span class="step-number">1</span>
+            <span class="step-label">Why Statement</span>
+            <span class="step-status"></span>
+          </li>
+          <li class="step-item" data-step="2">
+            <span class="step-number">2</span>
+            <span class="step-label">Define Your Niche</span>
+            <span class="step-status"></span>
+          </li>
+          <li class="step-item" data-step="3">
+            <span class="step-number">3</span>
+            <span class="step-label">True Fan Profiler</span>
+            <span class="step-status"></span>
+          </li>
+          <li class="step-item" data-step="4">
+            <span class="step-number">4</span>
+            <span class="step-label">Mission Statement</span>
+            <span class="step-status"></span>
+          </li>
+          <li class="step-item" data-step="5">
+            <span class="step-number">5</span>
+            <span class="step-label">Brand Blueprint</span>
+            <span class="step-status"></span>
+          </li>
+        </ul>
+        <div class="sidebar-footer">
+          <button id="my-documents-btn" class="btn btn-outline btn-small">My Documents</button>
+          <button id="logout-btn" class="btn btn-ghost btn-small">Sign Out</button>
+        </div>
+      </nav>
+
+      <!-- Chat Area -->
+      <main id="chat-area">
+        <div class="chat-header">
+          <button id="sidebar-toggle" class="sidebar-toggle">&#9776;</button>
+          <div class="chat-header-info">
+            <h3 id="step-title">Step 1: Discover Your Why</h3>
+            <p id="step-subtitle">Your YouTube Why is the spark that makes you magnetic, memorable, and built to last.</p>
+          </div>
+        </div>
+
+        <div id="chat-messages" class="chat-messages">
+          <!-- Messages render here -->
+        </div>
+
+        <div class="chat-input-area">
+          <div id="quick-replies" class="quick-replies">
+            <!-- Quick reply buttons render here -->
+          </div>
+          <form id="chat-form" class="chat-form">
+            <textarea id="chat-input" placeholder="Type your answer..." rows="1"></textarea>
+            <button type="submit" class="btn btn-send" id="send-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+            </button>
+          </form>
+        </div>
+      </main>
+
+      <!-- Documents Modal -->
+      <div id="documents-modal" class="modal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3>My Documents</h3>
+            <button class="modal-close">&times;</button>
+          </div>
+          <div id="documents-list" class="documents-list">
+            <p class="empty-state">Complete Step 5 to generate your Brand Blueprint and Messaging Guide.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>

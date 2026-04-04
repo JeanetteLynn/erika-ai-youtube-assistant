@@ -1,0 +1,14 @@
+name = "erika-ai-youtube-assistant"
+main = "src/index.js"
+compatibility_date = "2024-12-01"
+
+[site]
+bucket = "./public"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "erika-youtube-assistant-db"
+database_id = "5ae8ff53-d827-4470-99f8-86c7bccbd948"
+
+[vars]
+APP_NAME = "AI YouTube Assistant"
