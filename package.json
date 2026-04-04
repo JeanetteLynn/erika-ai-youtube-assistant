@@ -1,0 +1,13 @@
+{
+  "name": "erika-ai-youtube-assistant",
+  "version": "1.0.0",
+  "description": "AI-powered YouTube brand building assistant for Erika Vieira",
+  "scripts": {
+    "dev": "wrangler dev",
+    "build": "wrangler deploy --dry-run",
+    "deploy": "wrangler deploy"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
