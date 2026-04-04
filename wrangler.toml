@@ -2,8 +2,8 @@ name = "erika-ai-youtube-assistant"
 main = "src/index.js"
 compatibility_date = "2024-12-01"
 
-[site]
-bucket = "./public"
+[assets]
+directory = "./public"
 
 [[d1_databases]]
 binding = "DB"
