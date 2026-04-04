@@ -10,11 +10,11 @@ let completedSteps = [];
 let isLoading = false;
 
 const stepInfo = {
-  1: { title: 'Step 1: Discover Your Why', subtitle: 'Your YouTube Why is the spark that makes you magnetic, memorable, and built to last.' },
-  2: { title: 'Step 2: Define Your Niche', subtitle: 'Find the sweet spot where your passion, skills, and audience demand meet.' },
-  3: { title: 'Step 3: True Fan Profiler', subtitle: 'Build a vivid, detailed picture of your ideal viewer — your True Fan.' },
-  4: { title: 'Step 4: Mission Statement', subtitle: 'Distill everything into one powerful mission statement.' },
-  5: { title: 'Step 5: Brand Blueprint', subtitle: 'Generate your personalized YouTube Brand Blueprint & Messaging Guide.' },
+  1: { title: 'Step 1: Discover Your Why', subtitle: 'Your YouTube Why is the spark that makes you magnetic, memorable, and built to last.', totalQuestions: 22 },
+  2: { title: 'Step 2: Define Your Niche', subtitle: 'Find the sweet spot where your passion, skills, and audience demand meet.', totalQuestions: 15 },
+  3: { title: 'Step 3: True Fan Profiler', subtitle: 'Build a vivid, detailed picture of your ideal viewer — your True Fan.', totalQuestions: 29 },
+  4: { title: 'Step 4: Mission Statement', subtitle: 'Distill everything into one powerful mission statement.', totalQuestions: 5 },
+  5: { title: 'Step 5: Brand Blueprint', subtitle: 'Generate your personalized YouTube Brand Blueprint & Messaging Guide.', totalQuestions: 10 },
 };
 
 // =====================================================
@@ -149,6 +149,18 @@ function updateStepUI() {
   const info = stepInfo[currentStep];
   document.getElementById('step-title').textContent = info.title;
   document.getElementById('step-subtitle').textContent = info.subtitle;
+
+  // Update progress bar
+  updateProgressBar();
+}
+
+function updateProgressBar() {
+  const info = stepInfo[currentStep];
+  // Count user messages in the current chat as a proxy for questions answered
+  const userMessages = document.querySelectorAll('#chat-messages .message.user').length;
+  const pct = Math.min(Math.round((userMessages / info.totalQuestions) * 100), 100);
+  const fill = document.getElementById('step-progress-fill');
+  if (fill) fill.style.width = pct + '%';
 }
 
 async function switchStep(step) {
@@ -300,6 +312,7 @@ function appendMessage(role, content, scroll = true) {
 
   container.appendChild(div);
   if (scroll) container.scrollTop = container.scrollHeight;
+  updateProgressBar();
 }
 
 function formatMessage(text) {
@@ -325,20 +338,19 @@ function formatMessage(text) {
   // Wrap in paragraph
   html = '<p>' + html + '</p>';
 
-  // Wrap consecutive <li> in <ul>
-  html = html.replace(/(<li>.*?<\/li>(\s*<br>)?)+/g, (match) => {
-    return '<ul>' + match.replace(/<br>/g, '') + '</ul>';
+  // Wrap consecutive numbered <li> in <ol>, bullets in <ul>
+  // First handle numbered lists (1. 2. 3. etc)
+  html = html.replace(/(<li>[\s\S]*?<\/li>(\s*<br>)*)+/g, (match) => {
+    const cleaned = match.replace(/<br>/g, '');
+    // Check if the original text had numbered items
+    if (/^\d+\.\s/.test(match.replace(/<\/?li>/g, '').trim())) {
+      return '<ol>' + cleaned + '</ol>';
+    }
+    return '<ul>' + cleaned + '</ul>';
   });
 
   // Clean up empty paragraphs
   html = html.replace(/<p>\s*<\/p>/g, '');
-
-  // Progress indicator
-  html = html.replace(/Question (\d+) of (\d+) ✓/g, (_, current, total) => {
-    const pct = (parseInt(current) / parseInt(total) * 100).toFixed(0);
-    return `<div style="margin-top:8px;font-size:0.85rem;color:#666">Question ${current} of ${total} ✓</div>
-    <div class="progress-bar-container"><div class="progress-bar-fill" style="width:${pct}%"></div></div>`;
-  });
 
   return html;
 }

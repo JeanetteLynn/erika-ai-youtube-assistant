@@ -369,6 +369,25 @@ body {
 }
 
 /* =====================================================
+   Step Progress Bar — top of chat
+   ===================================================== */
+.step-progress-bar {
+  height: 8px;
+  background: #ede7e2;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.step-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--tan), var(--gold), var(--red));
+  border-radius: 0 4px 4px 0;
+  width: 2%;
+  min-width: 2%;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* =====================================================
    Chat Area — Warm, inviting
    ===================================================== */
 #chat-area {
