@@ -499,10 +499,11 @@ async function generatePDF(type) { return previewPDF(type); }
 function pdfPageStyles() {
   return `
     <style>
-      .pdf-page { position: relative; font-family: 'Nunito', Calibri, sans-serif; color: #203B4F; line-height: 1.7; padding: 50px 55px 80px; max-width: 700px; margin: 0 auto; background: #fff; }
-      .pdf-page::after { content: ''; position: absolute; bottom: 0; left: 55px; right: 55px; height: 50px; display: flex; align-items: center; }
+      .pdf-page { position: relative; font-family: 'Nunito', Calibri, sans-serif; color: #203B4F; line-height: 1.7; padding: 50px 55px 30px; max-width: 700px; margin: 0 auto 40px; background: #fff; border-bottom: 1px solid #ede7e2; }
+      .pdf-page:last-child { border-bottom: none; margin-bottom: 0; }
       .pdf-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.04; width: 400px; pointer-events: none; z-index: 0; }
-      .pdf-footer { position: absolute; bottom: 18px; left: 55px; right: 55px; display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: #BF9476; border-top: 1px solid #ede7e2; padding-top: 10px; }
+      .pdf-footer { display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: #BF9476; border-top: 1px solid #ede7e2; padding-top: 10px; margin-top: 30px; }
+      @media print { .pdf-page { margin-bottom: 0; border-bottom: none; page-break-before: always; padding-bottom: 60px; } .pdf-page:first-child { page-break-before: avoid; } .pdf-footer { position: absolute; bottom: 18px; left: 55px; right: 55px; margin-top: 0; } }
       .pdf-section-label { font-family: Georgia, serif; font-size: 11px; color: #C9A77B; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 10px 0; font-weight: 400; }
       .pdf-section-label-alt { font-family: Georgia, serif; font-size: 11px; color: #BF9476; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 10px 0; font-weight: 400; }
       .pdf-card { margin-bottom: 28px; padding: 22px 20px; border-radius: 10px; position: relative; z-index: 1; }
