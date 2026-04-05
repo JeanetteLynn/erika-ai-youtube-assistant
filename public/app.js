@@ -399,8 +399,8 @@ function showDownloadButtons() {
   div.className = 'message assistant';
   div.innerHTML = `
     <div class="message-bubble" style="display:flex;gap:12px;flex-wrap:wrap;">
-      <button class="btn btn-download" onclick="generatePDF('blueprint')">📄 Download Brand Blueprint</button>
-      <button class="btn btn-download" onclick="generatePDF('messaging')">📄 Download Messaging Guide</button>
+      <button class="btn btn-download" onclick="previewPDF('blueprint')">Preview Brand Blueprint</button>
+      <button class="btn btn-download" onclick="previewPDF('messaging')">Preview Messaging Guide</button>
     </div>
   `;
   container.appendChild(div);
@@ -411,37 +411,67 @@ function showDownloadButtons() {
 // PDF Generation
 // =====================================================
 
-async function generatePDF(type) {
-  // Get memory to populate the PDF
+async function previewPDF(type) {
   const res = await api('/api/memory', null, 'GET');
   const memory = res.memory || {};
 
-  let html;
-  if (type === 'blueprint') {
-    html = buildBlueprintHTML(memory);
-  } else {
-    html = buildMessagingHTML(memory);
-  }
+  const html = type === 'blueprint' ? buildBlueprintHTML(memory) : buildMessagingHTML(memory);
+  const title = type === 'blueprint' ? 'YouTube Brand Blueprint' : 'YouTube Messaging Guide';
+  const filename = type === 'blueprint' ? 'YouTube-Brand-Blueprint.pdf' : 'YouTube-Messaging-Guide.pdf';
 
-  // Create a temporary container
+  // Build preview modal
+  const overlay = document.createElement('div');
+  overlay.id = 'pdf-preview-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:200;background:rgba(32,59,79,0.7);display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);';
+  overlay.innerHTML = `
+    <div style="background:#fff;border-radius:20px;max-width:820px;width:100%;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 28px;border-bottom:1px solid #ede7e2;flex-shrink:0;">
+        <h3 style="font-size:1.1rem;font-weight:800;color:#203B4F;margin:0;">${title} — Preview</h3>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <button onclick="downloadPDF('${type}')" class="btn btn-primary" style="font-size:0.85rem;padding:10px 24px;">Download Full PDF</button>
+          <button onclick="document.getElementById('pdf-preview-overlay').remove()" style="background:none;border:none;font-size:1.5rem;color:#999;cursor:pointer;padding:4px 8px;">&times;</button>
+        </div>
+      </div>
+      <div style="overflow-y:auto;padding:24px;" id="pdf-preview-content">
+        ${html}
+      </div>
+      <div style="padding:16px 28px;border-top:1px solid #ede7e2;text-align:center;flex-shrink:0;background:#FBF8F5;border-radius:0 0 20px 20px;">
+        <p style="font-size:0.85rem;color:#666;margin:0 0 10px 0;">This is a preview. Download to see the full formatted document with print-ready styling.</p>
+        <button onclick="downloadPDF('${type}')" class="btn btn-primary" style="font-size:0.95rem;padding:12px 32px;">Download ${title} PDF</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+}
+
+async function downloadPDF(type) {
+  const res = await api('/api/memory', null, 'GET');
+  const memory = res.memory || {};
+
+  const html = type === 'blueprint' ? buildBlueprintHTML(memory) : buildMessagingHTML(memory);
+
   const container = document.createElement('div');
   container.innerHTML = html;
   container.style.position = 'absolute';
   container.style.left = '-9999px';
   document.body.appendChild(container);
 
-  // Generate PDF
   const opt = {
-    margin: [0.5, 0.6],
+    margin: [0.4, 0.5],
     filename: type === 'blueprint' ? 'YouTube-Brand-Blueprint.pdf' : 'YouTube-Messaging-Guide.pdf',
     image: { type: 'jpeg', quality: 0.98 },
     html2canvas: { scale: 2, useCORS: true },
     jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
+    pagebreak: { mode: ['css', 'legacy'], before: '.pdf-page' },
   };
 
   await html2pdf().set(opt).from(container).save();
   document.body.removeChild(container);
 }
+
+// Keep old name as alias for the documents modal
+async function generatePDF(type) { return previewPDF(type); }
 
 function pdfPageStyles() {
   return `
@@ -467,12 +497,17 @@ function pdfFooter(docTitle) {
   return `<div class="pdf-footer"><span>${docTitle}</span><span>Erika Vieira &mdash; YouTube Channel Producer &amp; Strategist &mdash; erikavieira.net</span></div>`;
 }
 
+function nl2br(text) {
+  if (!text) return '';
+  return text.replace(/\n/g, '<br>');
+}
+
 function buildBlueprintHTML(m) {
   const name = m.userName || 'You';
   return `
     ${pdfPageStyles()}
 
-    <!-- PAGE 1: INTRO / COVER -->
+    <!-- PAGE 1: COVER -->
     <div class="pdf-page" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; min-height: 750px;">
       <img src="/assets/erika-logo.png" alt="Erika Vieira" style="height: 55px; margin-bottom: 24px;" crossorigin="anonymous">
       <img class="pdf-watermark" src="/assets/erika-logo.png" alt="" crossorigin="anonymous">
@@ -480,51 +515,94 @@ function buildBlueprintHTML(m) {
       <div style="width: 60px; height: 3px; background: #C9A77B; margin: 0 auto 20px;"></div>
       <p style="font-size: 16px; color: #666; margin: 0 0 32px 0;">Prepared exclusively for <strong style="color: #203B4F;">${name}</strong></p>
       <div style="max-width: 440px; margin: 0 auto;">
-        <p style="font-size: 14px; color: #666; line-height: 1.8;">This blueprint is the foundation of your YouTube brand. Inside you will find your Why Statement, your defined niche, your True Fan profile, your mission statements, and your top video ideas. Everything here was built from YOUR story, YOUR voice, and YOUR vision.</p>
-        <p style="font-size: 14px; color: #666; line-height: 1.8; margin-top: 16px;">Use this document every time you plan content, write a description, update your channel, or pitch a collaboration. This is your north star.</p>
+        <p style="font-size: 14px; color: #666; line-height: 1.8;">This blueprint is the complete foundation of your YouTube brand, built from your answers across five guided sessions with Aria. Inside you will find your Why Statement, your defined niche, your complete True Fan profile, all five of your mission statement versions, and your top video ideas.</p>
+        <p style="font-size: 14px; color: #666; line-height: 1.8; margin-top: 16px;">Keep this document open every time you plan content, write a description, design a thumbnail, update your channel, or pitch a collaboration. This is your north star.</p>
+      </div>
+      <div style="margin-top: 40px; padding: 16px 28px; background: #FBF8F5; border-radius: 10px; text-align: left; max-width: 380px; width: 100%;">
+        <p style="font-size: 11px; color: #BF9476; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin: 0 0 8px 0;">What's Inside</p>
+        <p style="font-size: 13px; color: #444; margin: 0; line-height: 2;">
+          1. Your Why Statement<br>
+          2. Your Defined Niche<br>
+          3. Your True Fan Profile<br>
+          4. Your Mission Statements (5 Versions)<br>
+          5. Your Top Video Ideas
+        </p>
       </div>
       ${pdfFooter('YouTube Brand Blueprint')}
     </div>
 
-    <!-- PAGE 2+: CONTENT -->
+    <!-- PAGE 2: WHY + NICHE -->
     <div class="pdf-page">
       <img class="pdf-watermark" src="/assets/erika-logo.png" alt="" crossorigin="anonymous">
 
-      <!-- Why Statement -->
       <div class="pdf-card pdf-card-warm">
-        <p class="pdf-section-label">Your Why Statement</p>
-        <p style="font-size: 16px; font-style: italic; margin: 0; line-height: 1.7;">"${m.whyStatement || 'Complete Step 1 to discover your Why.'}"</p>
+        <p class="pdf-section-label">1. Your Why Statement</p>
+        <p style="font-size: 17px; font-style: italic; margin: 0 0 16px 0; line-height: 1.7; color: #203B4F;">"${m.whyStatement || 'Complete Step 1 to discover your Why.'}"</p>
+        ${m.whyAnswers ? `<div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(201,167,123,0.3);"><p style="font-size: 11px; color: #BF9476; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 6px 0;">The Themes Behind Your Why</p><p style="font-size: 13px; color: #555; margin: 0; line-height: 1.7;">${nl2br(m.whyAnswers)}</p></div>` : ''}
       </div>
 
-      <!-- Niche -->
       <div class="pdf-card pdf-card-plain">
-        <p class="pdf-section-label">Your Defined Niche</p>
-        <p style="font-size: 15px; margin: 0 0 6px 0;">${m.definedNiche || 'Complete Step 2 to define your niche.'}</p>
-        ${m.nicheType ? `<p style="font-size: 12px; color: #999; margin: 0;"><strong>Creator Type:</strong> ${m.nicheType}</p>` : ''}
+        <p class="pdf-section-label">2. Your Defined Niche</p>
+        <p style="font-size: 16px; font-weight: 700; margin: 0 0 8px 0; color: #203B4F;">${m.definedNiche || 'Complete Step 2 to define your niche.'}</p>
+        ${m.nicheType ? `<p style="font-size: 13px; color: #888; margin: 0 0 12px 0;">Creator Type: ${m.nicheType}</p>` : ''}
+        ${m.nicheAnswers ? `<div style="margin-top: 8px; padding-top: 12px; border-top: 1px solid #ede7e2;"><p style="font-size: 11px; color: #BF9476; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 6px 0;">Why This Niche</p><p style="font-size: 13px; color: #555; margin: 0; line-height: 1.7;">${nl2br(m.nicheAnswers)}</p></div>` : ''}
       </div>
 
-      <!-- True Fan -->
-      <div class="pdf-card pdf-card-tan">
-        <p class="pdf-section-label-alt">Your True Fan</p>
-        ${m.trueFanStatement ? `<p style="font-size: 15px; font-weight: 700; margin: 0 0 10px 0;">${m.trueFanStatement}</p>` : ''}
-        ${m.trueFanProfile ? `<p style="font-size: 13px; margin: 0; line-height: 1.7; color: #444;">${m.trueFanProfile}</p>` : '<p style="font-size: 14px;">Complete Step 3 to build your True Fan profile.</p>'}
+      ${pdfFooter('YouTube Brand Blueprint')}
+    </div>
+
+    <!-- PAGE 3: TRUE FAN (FULL PROFILE) -->
+    <div class="pdf-page">
+      <img class="pdf-watermark" src="/assets/erika-logo.png" alt="" crossorigin="anonymous">
+
+      <div class="pdf-card pdf-card-tan" style="margin-bottom: 20px;">
+        <p class="pdf-section-label-alt">3. Your True Fan</p>
+        <p style="font-size: 15px; font-weight: 700; margin: 0 0 4px 0; color: #203B4F;">True Fan Statement</p>
+        ${m.trueFanStatement ? `<p style="font-size: 14px; margin: 0; line-height: 1.7;">${nl2br(m.trueFanStatement)}</p>` : '<p>Complete Step 3.</p>'}
       </div>
 
-      <!-- Mission Statements -->
+      ${m.trueFanDemographics ? `
       <div class="pdf-card pdf-card-plain">
-        <p class="pdf-section-label">Your Mission Statements</p>
-        ${m.missionBelief ? `<div class="pdf-mission-item"><p class="pdf-mission-label">A &mdash; Belief Version</p><p style="font-size: 14px; margin: 0;">${m.missionBelief}</p></div>` : ''}
-        ${m.missionShort ? `<div class="pdf-mission-item"><p class="pdf-mission-label">B &mdash; Short Intro</p><p style="font-size: 14px; margin: 0;">${m.missionShort}</p></div>` : ''}
-        ${m.missionMedium ? `<div class="pdf-mission-item"><p class="pdf-mission-label">C &mdash; About Section</p><p style="font-size: 14px; margin: 0;">${m.missionMedium}</p></div>` : ''}
-        ${m.missionBrand ? `<div class="pdf-mission-item"><p class="pdf-mission-label">D &mdash; Brand Positioning</p><p style="font-size: 14px; margin: 0;">${m.missionBrand}</p></div>` : ''}
-        ${m.missionCreative ? `<div class="pdf-mission-item"><p class="pdf-mission-label">E &mdash; Creative / Unique</p><p style="font-size: 14px; margin: 0; font-style: italic;">${m.missionCreative}</p></div>` : ''}
+        <p style="font-size: 11px; color: #BF9476; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 8px 0;">Demographics</p>
+        <p style="font-size: 13px; margin: 0; line-height: 1.8; color: #444;">${nl2br(m.trueFanDemographics)}</p>
+      </div>` : ''}
+
+      ${m.trueFanProfile ? `
+      <div class="pdf-card pdf-card-warm">
+        <p style="font-size: 11px; color: #C9A77B; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 8px 0;">Full Profile</p>
+        <p style="font-size: 13px; margin: 0; line-height: 1.8; color: #444;">${nl2br(m.trueFanProfile)}</p>
+      </div>` : ''}
+
+      ${m.trueFanEmotionalTriggers ? `
+      <div class="pdf-card pdf-card-red">
+        <p style="font-family: Georgia, serif; font-size: 11px; color: #CD3F42; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 8px 0;">Emotional Triggers &amp; Pain Points</p>
+        <p style="font-size: 13px; margin: 0; line-height: 1.8; color: #444;">${nl2br(m.trueFanEmotionalTriggers)}</p>
+      </div>` : ''}
+
+      ${pdfFooter('YouTube Brand Blueprint')}
+    </div>
+
+    <!-- PAGE 4: MISSION STATEMENTS -->
+    <div class="pdf-page">
+      <img class="pdf-watermark" src="/assets/erika-logo.png" alt="" crossorigin="anonymous">
+
+      <div class="pdf-card pdf-card-plain">
+        <p class="pdf-section-label">4. Your Mission Statements</p>
+        <p style="font-size: 13px; color: #888; margin: 0 0 16px 0;">Five versions for different contexts. Copy and paste the one you need.</p>
+
+        ${m.missionBelief ? `<div class="pdf-mission-item"><p class="pdf-mission-label">A &mdash; Belief Version</p><p style="font-size: 11px; color: #999; margin: 0 0 4px 0;">Use in: manifestos, about pages, passionate pitches</p><p style="font-size: 14px; margin: 0; line-height: 1.7;">${m.missionBelief}</p></div>` : ''}
+        ${m.missionShort ? `<div class="pdf-mission-item"><p class="pdf-mission-label">B &mdash; Short Intro (15 words max)</p><p style="font-size: 11px; color: #999; margin: 0 0 4px 0;">Use in: YouTube intros, Instagram bio, elevator pitches, email signatures</p><p style="font-size: 14px; margin: 0; line-height: 1.7;">${m.missionShort}</p></div>` : ''}
+        ${m.missionMedium ? `<div class="pdf-mission-item"><p class="pdf-mission-label">C &mdash; About Section (30-45 words)</p><p style="font-size: 11px; color: #999; margin: 0 0 4px 0;">Use in: YouTube About section, social media bios, speaker introductions</p><p style="font-size: 14px; margin: 0; line-height: 1.7;">${m.missionMedium}</p></div>` : ''}
+        ${m.missionBrand ? `<div class="pdf-mission-item"><p class="pdf-mission-label">D &mdash; Brand Positioning (60-85 words)</p><p style="font-size: 11px; color: #999; margin: 0 0 4px 0;">Use in: website homepage, media kit, collaboration pitches, press bios</p><p style="font-size: 14px; margin: 0; line-height: 1.7;">${m.missionBrand}</p></div>` : ''}
+        ${m.missionCreative ? `<div class="pdf-mission-item"><p class="pdf-mission-label">E &mdash; Creative / Unique</p><p style="font-size: 11px; color: #999; margin: 0 0 4px 0;">Use in: thumbnails, hooks, social posts, merch, anywhere you want to stop scrolls</p><p style="font-size: 14px; margin: 0; font-style: italic; line-height: 1.7;">${m.missionCreative}</p></div>` : ''}
         ${!m.missionBelief ? '<p style="font-size: 14px;">Complete Step 4 to craft your mission statements.</p>' : ''}
       </div>
 
       ${m.videoIdeas ? `
       <div class="pdf-card pdf-card-red">
-        <p style="font-family: Georgia, serif; font-size: 11px; color: #CD3F42; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 10px 0;">Your Top Video Ideas</p>
-        <p style="font-size: 14px; margin: 0; line-height: 1.8; white-space: pre-line;">${m.videoIdeas}</p>
+        <p style="font-family: Georgia, serif; font-size: 11px; color: #CD3F42; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 4px 0;">5. Your Top Video Ideas</p>
+        <p style="font-size: 11px; color: #999; margin: 0 0 10px 0;">These came directly from your True Fan's emotional triggers and frustrations. Start here.</p>
+        <p style="font-size: 14px; margin: 0; line-height: 2; white-space: pre-line;">${m.videoIdeas}</p>
       </div>` : ''}
 
       ${pdfFooter('YouTube Brand Blueprint')}
@@ -553,7 +631,7 @@ function buildMessagingHTML(m) {
   return `
     ${pdfPageStyles()}
 
-    <!-- PAGE 1: INTRO / COVER -->
+    <!-- PAGE 1: COVER -->
     <div class="pdf-page" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; min-height: 750px;">
       <img src="/assets/erika-logo.png" alt="Erika Vieira" style="height: 55px; margin-bottom: 24px;" crossorigin="anonymous">
       <img class="pdf-watermark" src="/assets/erika-logo.png" alt="" crossorigin="anonymous">
@@ -561,74 +639,101 @@ function buildMessagingHTML(m) {
       <div style="width: 60px; height: 3px; background: #C9A77B; margin: 0 auto 20px;"></div>
       <p style="font-size: 16px; color: #666; margin: 0 0 32px 0;">Prepared exclusively for <strong style="color: #203B4F;">${name}</strong></p>
       <div style="max-width: 440px; margin: 0 auto;">
-        <p style="font-size: 14px; color: #666; line-height: 1.8;">This guide is your messaging toolkit. It contains your video intros, channel banner copy, about section, messaging pillars, power words, taglines, and everything you need to speak directly to your True Fan every single time you create.</p>
-        <p style="font-size: 14px; color: #666; line-height: 1.8; margin-top: 16px;">Keep this document open when you write titles, descriptions, emails, and social posts. Consistency builds trust, and trust builds a community.</p>
+        <p style="font-size: 14px; color: #666; line-height: 1.8;">This is your complete messaging toolkit, built from your brand foundation. Every word, phrase, tagline, and script inside was crafted specifically for you and your True Fan. This is not generic advice. This is YOUR voice, distilled and ready to use.</p>
+        <p style="font-size: 14px; color: #666; line-height: 1.8; margin-top: 16px;">Keep this document open every time you write a title, film an intro, draft a description, send an email, or post on social media. Consistency builds trust, and trust builds a community.</p>
+      </div>
+      <div style="margin-top: 40px; padding: 16px 28px; background: #FBF8F5; border-radius: 10px; text-align: left; max-width: 380px; width: 100%;">
+        <p style="font-size: 11px; color: #BF9476; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin: 0 0 8px 0;">What's Inside</p>
+        <p style="font-size: 13px; color: #444; margin: 0; line-height: 2;">
+          1. Channel Banner &amp; Promise<br>
+          2. Video Intro Scripts (3 lengths)<br>
+          3. About Section Copy<br>
+          4. Messaging Pillars<br>
+          5. Power Words &amp; Phrases<br>
+          6. Taglines &amp; Signature Phrases<br>
+          7. What NOT to Say<br>
+          8. Upload Schedule
+        </p>
       </div>
       ${pdfFooter('YouTube Messaging Guide')}
     </div>
 
-    <!-- PAGE 2+: CONTENT -->
+    <!-- PAGE 2: BANNER + PROMISE + INTROS -->
     <div class="pdf-page">
       <img class="pdf-watermark" src="/assets/erika-logo.png" alt="" crossorigin="anonymous">
 
-      <!-- Channel Banner -->
       <div style="margin-bottom: 28px; padding: 28px 24px; background: linear-gradient(135deg, #203B4F 0%, #2d5068 100%); border-radius: 10px; text-align: center;">
-        <p style="font-size: 10px; color: #C9A77B; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 8px 0;">Your Channel Banner</p>
-        <p style="font-family: Georgia, serif; font-size: 20px; color: #fff; margin: 0; font-style: italic;">"${m.channelBanner || 'Complete Step 5'}"</p>
+        <p style="font-size: 10px; color: #C9A77B; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 8px 0;">1. Your Channel Banner</p>
+        <p style="font-family: Georgia, serif; font-size: 22px; color: #fff; margin: 0; font-style: italic;">"${m.channelBanner || 'Complete Step 5'}"</p>
+        <p style="font-size: 11px; color: rgba(255,255,255,0.5); margin: 8px 0 0 0;">Copy this text directly onto your YouTube banner image.</p>
       </div>
 
-      <!-- Channel Promise -->
       <div class="pdf-card pdf-card-warm">
-        <p class="pdf-section-label">Channel Promise</p>
-        <p style="font-size: 15px; margin: 0; line-height: 1.7;">${m.channelPromise || 'Complete Step 5 to generate your channel promise.'}</p>
+        <p class="pdf-section-label">2. Channel Promise</p>
+        <p style="font-size: 11px; color: #999; margin: 0 0 8px 0;">Read this before every video. It is the heartbeat of your channel.</p>
+        <p style="font-size: 15px; margin: 0; line-height: 1.7;">${nl2br(m.channelPromise || 'Complete Step 5 to generate your channel promise.')}</p>
       </div>
 
       ${m.videoIntroScripts ? `
       <div class="pdf-card pdf-card-plain">
-        <p class="pdf-section-label-alt">Video Intro Scripts</p>
-        <p style="font-size: 13px; margin: 0; line-height: 1.8; white-space: pre-line;">${m.videoIntroScripts}</p>
-      </div>` : ''}
-
-      ${m.aboutSection ? `
-      <div class="pdf-card pdf-card-tan">
-        <p class="pdf-section-label-alt">About Section Copy</p>
-        <p style="font-size: 13px; margin: 0; line-height: 1.7;">${m.aboutSection}</p>
+        <p class="pdf-section-label-alt">3. Video Intro Scripts</p>
+        <p style="font-size: 11px; color: #999; margin: 0 0 12px 0;">Three lengths for different formats. Copy-paste into your script doc or read directly from here.</p>
+        <div style="white-space: pre-line; font-size: 13px; line-height: 1.8; color: #333;">${nl2br(m.videoIntroScripts)}</div>
       </div>` : ''}
 
       ${pdfFooter('YouTube Messaging Guide')}
     </div>
 
-    <!-- PAGE 3: MORE CONTENT -->
+    <!-- PAGE 3: ABOUT + PILLARS -->
     <div class="pdf-page">
       <img class="pdf-watermark" src="/assets/erika-logo.png" alt="" crossorigin="anonymous">
 
+      ${m.aboutSection ? `
+      <div class="pdf-card pdf-card-tan">
+        <p class="pdf-section-label-alt">4. About Section Copy</p>
+        <p style="font-size: 11px; color: #999; margin: 0 0 8px 0;">Copy this into your YouTube About section. Update the upload schedule if it changes.</p>
+        <div style="font-size: 14px; line-height: 1.8; color: #333; padding: 12px 16px; background: rgba(255,255,255,0.6); border-radius: 8px; margin-top: 8px;">${nl2br(m.aboutSection)}</div>
+      </div>` : ''}
+
       ${m.messagingPillars ? `
       <div class="pdf-card pdf-card-warm">
-        <p class="pdf-section-label">Messaging Pillars</p>
-        <p style="font-size: 13px; margin: 0; line-height: 1.8; white-space: pre-line;">${m.messagingPillars}</p>
+        <p class="pdf-section-label">5. Messaging Pillars</p>
+        <p style="font-size: 11px; color: #999; margin: 0 0 8px 0;">These are the core beliefs your content returns to again and again. Every video, email, and post should connect to at least one of these.</p>
+        <div style="font-size: 14px; line-height: 2; color: #333; white-space: pre-line;">${nl2br(m.messagingPillars)}</div>
       </div>` : ''}
+
+      ${pdfFooter('YouTube Messaging Guide')}
+    </div>
+
+    <!-- PAGE 4: POWER WORDS + TAGLINES + WHAT NOT TO SAY + SCHEDULE -->
+    <div class="pdf-page">
+      <img class="pdf-watermark" src="/assets/erika-logo.png" alt="" crossorigin="anonymous">
 
       ${m.powerWords ? `
       <div class="pdf-card pdf-card-red">
-        <p style="font-family: Georgia, serif; font-size: 11px; color: #CD3F42; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 10px 0;">Power Words &amp; Phrases</p>
-        <p style="font-size: 13px; margin: 0; line-height: 1.8; white-space: pre-line;">${m.powerWords}</p>
+        <p style="font-family: Georgia, serif; font-size: 11px; color: #CD3F42; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 4px 0;">6. Power Words &amp; Phrases</p>
+        <p style="font-size: 11px; color: #999; margin: 0 0 10px 0;">Weave these into your titles, thumbnails, descriptions, and scripts. These are the words that feel like YOU.</p>
+        <div style="font-size: 14px; line-height: 2; color: #333; white-space: pre-line;">${nl2br(m.powerWords)}</div>
       </div>` : ''}
 
       ${m.taglines ? `
       <div class="pdf-card pdf-card-plain">
-        <p class="pdf-section-label">Taglines &amp; Signature Phrases</p>
-        <p style="font-size: 13px; margin: 0; line-height: 1.8; white-space: pre-line;">${m.taglines}</p>
+        <p class="pdf-section-label">7. Taglines &amp; Signature Phrases</p>
+        <p style="font-size: 11px; color: #999; margin: 0 0 8px 0;">Use these in intros, outros, thumbnails, merch, social posts, anywhere you want to be remembered.</p>
+        <div style="font-size: 14px; line-height: 2; color: #333; white-space: pre-line;">${nl2br(m.taglines)}</div>
       </div>` : ''}
 
       ${m.whatNotToSay ? `
       <div style="margin-bottom: 28px; padding: 22px 20px; background: linear-gradient(135deg, #fff5f5 0%, #fef0f0 100%); border-radius: 10px; border-left: 4px solid #CD3F42; position: relative; z-index: 1;">
-        <p style="font-family: Georgia, serif; font-size: 11px; color: #CD3F42; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 10px 0;">What Not to Say</p>
-        <p style="font-size: 13px; margin: 0; line-height: 1.8; white-space: pre-line;">${m.whatNotToSay}</p>
+        <p style="font-family: Georgia, serif; font-size: 11px; color: #CD3F42; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 4px 0;">8. What NOT to Say</p>
+        <p style="font-size: 11px; color: #999; margin: 0 0 10px 0;">These phrases undermine your brand. Avoid them in your content, emails, and conversations.</p>
+        <div style="font-size: 13px; line-height: 1.9; color: #444; white-space: pre-line;">${nl2br(m.whatNotToSay)}</div>
       </div>` : ''}
 
       <div class="pdf-card pdf-card-plain">
-        <p class="pdf-section-label">Upload Schedule</p>
-        <p style="font-size: 15px; font-weight: 700; margin: 0;">${m.uploadFrequency || 'Not yet defined'}</p>
+        <p class="pdf-section-label">9. Upload Schedule</p>
+        <p style="font-size: 16px; font-weight: 700; margin: 0; color: #203B4F;">${m.uploadFrequency || 'Not yet defined'}</p>
+        <p style="font-size: 12px; color: #999; margin: 6px 0 0 0;">Consistency matters more than frequency. Pick a schedule you can keep for 6 months.</p>
       </div>
 
       ${pdfFooter('YouTube Messaging Guide')}
