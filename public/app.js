@@ -459,7 +459,7 @@ async function downloadPDF(type) {
     <html>
     <head>
       <title>${title}</title>
-      <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
       ${pdfPageStyles()}
       <style>
         @media print {
@@ -504,8 +504,8 @@ function pdfPageStyles() {
       .pdf-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.04; width: 400px; pointer-events: none; z-index: 0; }
       .pdf-footer { display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: #BF9476; border-top: 1px solid #ede7e2; padding-top: 10px; margin-top: 30px; }
       @media print { .pdf-page { margin-bottom: 0; border-bottom: none; page-break-before: always; padding-bottom: 60px; } .pdf-page:first-child { page-break-before: avoid; } .pdf-footer { position: absolute; bottom: 18px; left: 55px; right: 55px; margin-top: 0; } }
-      .pdf-section-label { font-family: Georgia, serif; font-size: 11px; color: #C9A77B; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 10px 0; font-weight: 400; }
-      .pdf-section-label-alt { font-family: Georgia, serif; font-size: 11px; color: #BF9476; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 10px 0; font-weight: 400; }
+      .pdf-section-label { font-family: 'Nunito', sans-serif; font-size: 11px; color: #C9A77B; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 10px 0; font-weight: 800; }
+      .pdf-section-label-alt { font-family: 'Nunito', sans-serif; font-size: 11px; color: #BF9476; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 10px 0; font-weight: 800; }
       .pdf-card { margin-bottom: 28px; padding: 22px 20px; border-radius: 10px; position: relative; z-index: 1; }
       .pdf-card-warm { background: linear-gradient(135deg, #FBF8F5 0%, #f5ede6 100%); border-left: 4px solid #C9A77B; }
       .pdf-card-plain { background: #fff; border: 1px solid #ede7e2; }
@@ -746,7 +746,7 @@ function buildBlueprintHTML(m) {
     <div class="pdf-page" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; min-height: 750px;">
       <img src="/assets/erika-logo.png" alt="Erika Vieira" style="height: 55px; margin-bottom: 24px;" crossorigin="anonymous">
       <img class="pdf-watermark" src="/assets/erika-logo.png" alt="" crossorigin="anonymous">
-      <h1 style="font-family: Georgia, serif; font-size: 32px; color: #203B4F; margin: 0 0 8px 0; letter-spacing: 1px;">YouTube Brand Blueprint</h1>
+      <h1 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 36px; color: #203B4F; margin: 0 0 8px 0; letter-spacing: 1px;">YouTube Brand Blueprint</h1>
       <div style="width: 60px; height: 3px; background: #C9A77B; margin: 0 auto 20px;"></div>
       <p style="font-size: 16px; color: #666; margin: 0 0 32px 0;">Prepared exclusively for <strong style="color: #203B4F;">${name}</strong></p>
       <div style="max-width: 440px; margin: 0 auto;">
@@ -847,7 +847,7 @@ function buildBlueprintHTML(m) {
     <div class="pdf-page" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; min-height: 750px;">
       <img class="pdf-watermark" src="/assets/erika-logo.png" alt="" crossorigin="anonymous">
       <img src="/assets/erika-headshot.png" alt="Erika Vieira" style="width: 180px; height: 180px; border-radius: 50%; object-fit: cover; object-position: center top; margin-bottom: 24px; border: 4px solid #C9A77B;" crossorigin="anonymous">
-      <h2 style="font-family: Georgia, serif; font-size: 24px; color: #203B4F; margin: 0 0 12px 0;">Ready to Bring This Blueprint to Life?</h2>
+      <h2 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 28px; color: #203B4F; margin: 0 0 12px 0;">Ready to Bring This Blueprint to Life?</h2>
       <div style="width: 40px; height: 3px; background: #C9A77B; margin: 0 auto 20px;"></div>
       <p style="font-size: 14px; color: #666; line-height: 1.8; max-width: 420px; margin: 0 auto 24px;">Your brand foundation is set. Now it is time to build the channel. Inside the <strong style="color: #203B4F;">Zero to Influence YouTube Bootcamp</strong>, I will walk you through everything: content strategy, thumbnails, growth systems, monetization, and the mindset to keep going when it gets hard.</p>
       <a href="https://masterclass.erikavieira.net/bootcamp-waitlist" style="display: inline-block; background: #CD3F42; color: #fff; font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 700; padding: 14px 32px; border-radius: 30px; text-decoration: none; letter-spacing: 0.5px;">JOIN THE BOOTCAMP WAITLIST &rarr;</a>
@@ -870,7 +870,7 @@ function buildMessagingHTML(m) {
     <div class="pdf-page" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; min-height: 750px;">
       <img src="/assets/erika-logo.png" alt="Erika Vieira" style="height: 55px; margin-bottom: 24px;" crossorigin="anonymous">
       <img class="pdf-watermark" src="/assets/erika-logo.png" alt="" crossorigin="anonymous">
-      <h1 style="font-family: Georgia, serif; font-size: 32px; color: #203B4F; margin: 0 0 8px 0; letter-spacing: 1px;">YouTube Messaging Guide</h1>
+      <h1 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 36px; color: #203B4F; margin: 0 0 8px 0; letter-spacing: 1px;">YouTube Messaging Guide</h1>
       <div style="width: 60px; height: 3px; background: #C9A77B; margin: 0 auto 20px;"></div>
       <p style="font-size: 16px; color: #666; margin: 0 0 32px 0;">Prepared exclusively for <strong style="color: #203B4F;">${name}</strong></p>
       <div style="max-width: 440px; margin: 0 auto;">
@@ -899,7 +899,7 @@ function buildMessagingHTML(m) {
 
       <div style="margin-bottom: 28px; padding: 28px 24px; background: linear-gradient(135deg, #203B4F 0%, #2d5068 100%); border-radius: 10px; text-align: center;">
         <p style="font-size: 10px; color: #C9A77B; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 8px 0;">1. Your Channel Banner</p>
-        <p style="font-family: Georgia, serif; font-size: 22px; color: #fff; margin: 0; font-style: italic;">"${m.channelBanner || 'Complete Step 5'}"</p>
+        <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 24px; color: #fff; margin: 0; font-style: italic;">"${m.channelBanner || 'Complete Step 5'}"</p>
         <p style="font-size: 11px; color: rgba(255,255,255,0.5); margin: 8px 0 0 0;">Copy this text directly onto your YouTube banner image.</p>
       </div>
 
@@ -978,7 +978,7 @@ function buildMessagingHTML(m) {
     <div class="pdf-page" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; min-height: 750px;">
       <img class="pdf-watermark" src="/assets/erika-logo.png" alt="" crossorigin="anonymous">
       <img src="/assets/erika-headshot.png" alt="Erika Vieira" style="width: 180px; height: 180px; border-radius: 50%; object-fit: cover; object-position: center top; margin-bottom: 24px; border: 4px solid #C9A77B;" crossorigin="anonymous">
-      <h2 style="font-family: Georgia, serif; font-size: 24px; color: #203B4F; margin: 0 0 12px 0;">Your Words Are Ready. Your Channel Is Waiting.</h2>
+      <h2 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 28px; color: #203B4F; margin: 0 0 12px 0;">Your Words Are Ready. Your Channel Is Waiting.</h2>
       <div style="width: 40px; height: 3px; background: #C9A77B; margin: 0 auto 20px;"></div>
       <p style="font-size: 14px; color: #666; line-height: 1.8; max-width: 420px; margin: 0 auto 24px;">You have the blueprint. You have the words. Now it is time to hit record. Inside the <strong style="color: #203B4F;">Zero to Influence YouTube Bootcamp</strong>, I will help you build, grow, and monetize a channel that changes lives, starting with yours.</p>
       <a href="https://masterclass.erikavieira.net/bootcamp-waitlist" style="display: inline-block; background: #CD3F42; color: #fff; font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 700; padding: 14px 32px; border-radius: 30px; text-decoration: none; letter-spacing: 0.5px;">JOIN THE BOOTCAMP WAITLIST &rarr;</a>
