@@ -1020,28 +1020,74 @@ async function loadDocuments() {
 
     container.innerHTML = '';
 
-    // Always show Blueprint card — it populates progressively as steps complete
-    const blueprintStatus = memory.whyStatement ? 'Ready to preview' : 'Complete Steps 1-4 to build';
+    // Blueprint section checklist
+    const bpSections = [
+      { key: 'whyStatement', label: 'Why Statement', step: 1 },
+      { key: 'definedNiche', label: 'Defined Niche', step: 2 },
+      { key: 'trueFanStatement', label: 'True Fan Profile', step: 3 },
+      { key: 'missionBelief', label: 'Mission Statements', step: 4 },
+      { key: 'videoIdeas', label: 'Video Ideas', step: 3 },
+    ];
+    const bpMissing = bpSections.filter(s => !memory[s.key]);
+    const bpComplete = bpMissing.length === 0;
+
+    let bpAlert = '';
+    if (!bpComplete && bpSections.some(s => memory[s.key])) {
+      bpAlert = `<div style="background:#FFF8E7;border:1px solid #F0D68A;border-radius:8px;padding:10px 14px;margin-bottom:12px;">
+        <p style="font-size:0.8rem;font-weight:700;color:#8B6E00;margin:0 0 6px 0;">Missing sections:</p>
+        ${bpMissing.map(s => `<p style="font-size:0.78rem;color:#8B6E00;margin:0 0 2px 0;">&#9744; ${s.label} <span style="color:#B89A30;">(Step ${s.step})</span></p>`).join('')}
+      </div>`;
+    }
+
+    const blueprintStatus = bpComplete ? 'Complete — ready to download' : (bpSections.some(s => memory[s.key]) ? 'In progress' : 'Complete Steps 1-4 to build');
+    const bpColor = bpComplete ? '#5cb85c' : (bpSections.some(s => memory[s.key]) ? '#D4A017' : '#999');
+
     container.innerHTML += `
       <div class="document-card">
         <h4>YouTube Brand Blueprint</h4>
         <p>Your Why, Niche, True Fan, Mission Statements, and Video Ideas</p>
-        <p style="font-size:0.8rem;color:${memory.whyStatement ? '#5cb85c' : '#999'};margin-bottom:12px;">${blueprintStatus}</p>
+        <p style="font-size:0.8rem;color:${bpColor};font-weight:600;margin-bottom:8px;">${blueprintStatus}</p>
+        ${bpAlert}
         <div class="document-actions">
-          <button class="btn btn-download" onclick="previewPDF('blueprint')" ${!memory.whyStatement ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}>Preview Document</button>
+          <button class="btn btn-download" onclick="previewPDF('blueprint')" ${!bpSections.some(s => memory[s.key]) ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}>Preview Document</button>
         </div>
       </div>
     `;
 
-    // Always show Messaging Guide card
-    const messagingStatus = hasMessagingData ? 'Ready to preview' : 'Complete Step 5 to build';
+    // Messaging Guide section checklist
+    const mgSections = [
+      { key: 'channelBanner', label: 'Channel Banner' },
+      { key: 'channelPromise', label: 'Channel Promise' },
+      { key: 'videoIntroScripts', label: 'Video Intro Scripts' },
+      { key: 'aboutSection', label: 'About Section' },
+      { key: 'messagingPillars', label: 'Messaging Pillars' },
+      { key: 'powerWords', label: 'Power Words' },
+      { key: 'taglines', label: 'Taglines' },
+      { key: 'whatNotToSay', label: 'What Not to Say' },
+      { key: 'uploadFrequency', label: 'Upload Schedule' },
+    ];
+    const mgMissing = mgSections.filter(s => !memory[s.key]);
+    const mgComplete = mgMissing.length === 0;
+
+    let mgAlert = '';
+    if (!mgComplete && mgSections.some(s => memory[s.key])) {
+      mgAlert = `<div style="background:#FFF8E7;border:1px solid #F0D68A;border-radius:8px;padding:10px 14px;margin-bottom:12px;">
+        <p style="font-size:0.8rem;font-weight:700;color:#8B6E00;margin:0 0 6px 0;">Missing sections:</p>
+        ${mgMissing.map(s => `<p style="font-size:0.78rem;color:#8B6E00;margin:0 0 2px 0;">&#9744; ${s.label}</p>`).join('')}
+      </div>`;
+    }
+
+    const messagingStatus = mgComplete ? 'Complete — ready to download' : (mgSections.some(s => memory[s.key]) ? 'In progress' : 'Complete Step 5 to build');
+    const mgColor = mgComplete ? '#5cb85c' : (mgSections.some(s => memory[s.key]) ? '#D4A017' : '#999');
+
     container.innerHTML += `
       <div class="document-card">
         <h4>YouTube Messaging Guide</h4>
         <p>Video Intros, Banner, About Section, Pillars, Power Words, Taglines, and More</p>
-        <p style="font-size:0.8rem;color:${hasMessagingData ? '#5cb85c' : '#999'};margin-bottom:12px;">${messagingStatus}</p>
+        <p style="font-size:0.8rem;color:${mgColor};font-weight:600;margin-bottom:8px;">${messagingStatus}</p>
+        ${mgAlert}
         <div class="document-actions">
-          <button class="btn btn-download" onclick="previewPDF('messaging')" ${!hasMessagingData ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}>Preview Document</button>
+          <button class="btn btn-download" onclick="previewPDF('messaging')" ${!mgSections.some(s => memory[s.key]) ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}>Preview Document</button>
         </div>
       </div>
     `;
