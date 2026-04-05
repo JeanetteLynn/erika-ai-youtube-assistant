@@ -533,7 +533,7 @@ function buildBlueprintHTML(m) {
     <!-- LAST PAGE: CTA -->
     <div class="pdf-page" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; min-height: 750px;">
       <img class="pdf-watermark" src="/assets/erika-logo.png" alt="" crossorigin="anonymous">
-      <img src="https://erikavieira.net/wp-content/uploads/2023/06/Erika-Home-Hero-6.png" alt="Erika Vieira" style="width: 180px; height: 180px; border-radius: 50%; object-fit: cover; object-position: center top; margin-bottom: 24px; border: 4px solid #C9A77B;" crossorigin="anonymous">
+      <img src="/assets/erika-headshot.png" alt="Erika Vieira" style="width: 180px; height: 180px; border-radius: 50%; object-fit: cover; object-position: center top; margin-bottom: 24px; border: 4px solid #C9A77B;" crossorigin="anonymous">
       <h2 style="font-family: Georgia, serif; font-size: 24px; color: #203B4F; margin: 0 0 12px 0;">Ready to Bring This Blueprint to Life?</h2>
       <div style="width: 40px; height: 3px; background: #C9A77B; margin: 0 auto 20px;"></div>
       <p style="font-size: 14px; color: #666; line-height: 1.8; max-width: 420px; margin: 0 auto 24px;">Your brand foundation is set. Now it is time to build the channel. Inside the <strong style="color: #203B4F;">Zero to Influence YouTube Bootcamp</strong>, I will walk you through everything: content strategy, thumbnails, growth systems, monetization, and the mindset to keep going when it gets hard.</p>
@@ -637,7 +637,7 @@ function buildMessagingHTML(m) {
     <!-- LAST PAGE: CTA -->
     <div class="pdf-page" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; min-height: 750px;">
       <img class="pdf-watermark" src="/assets/erika-logo.png" alt="" crossorigin="anonymous">
-      <img src="https://erikavieira.net/wp-content/uploads/2023/06/Erika-Home-Hero-6.png" alt="Erika Vieira" style="width: 180px; height: 180px; border-radius: 50%; object-fit: cover; object-position: center top; margin-bottom: 24px; border: 4px solid #C9A77B;" crossorigin="anonymous">
+      <img src="/assets/erika-headshot.png" alt="Erika Vieira" style="width: 180px; height: 180px; border-radius: 50%; object-fit: cover; object-position: center top; margin-bottom: 24px; border: 4px solid #C9A77B;" crossorigin="anonymous">
       <h2 style="font-family: Georgia, serif; font-size: 24px; color: #203B4F; margin: 0 0 12px 0;">Your Words Are Ready. Your Channel Is Waiting.</h2>
       <div style="width: 40px; height: 3px; background: #C9A77B; margin: 0 auto 20px;"></div>
       <p style="font-size: 14px; color: #666; line-height: 1.8; max-width: 420px; margin: 0 auto 24px;">You have the blueprint. You have the words. Now it is time to hit record. Inside the <strong style="color: #203B4F;">Zero to Influence YouTube Bootcamp</strong>, I will help you build, grow, and monetize a channel that changes lives, starting with yours.</p>
