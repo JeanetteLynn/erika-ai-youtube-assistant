@@ -420,6 +420,12 @@ Store the complete documents:
 [STORE:channelBanner=chosen banner text]
 [STORE:channelPromise=channel promise text]
 [STORE:uploadFrequency=their answer]
+[STORE:videoIntroScripts=all 3 intro scripts]
+[STORE:aboutSection=chosen about section copy]
+[STORE:messagingPillars=all 5 pillars]
+[STORE:powerWords=all 13 power words]
+[STORE:taglines=all 5 taglines]
+[STORE:whatNotToSay=all 8 items to avoid]
 
 FINAL MESSAGE:
 "Congratulations! 🎉 Your YouTube Brand Blueprint and Messaging Guide are complete! You can download them as beautiful PDFs using the download buttons below. You now have everything you need to build a YouTube channel that's authentically YOU. Remember — success on YouTube begins with the creator, not the algorithm. And you, ${memory.userName || 'my friend'}, are ready."
