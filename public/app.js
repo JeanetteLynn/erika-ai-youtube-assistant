@@ -450,24 +450,47 @@ async function downloadPDF(type) {
   const memory = res.memory || {};
 
   const html = type === 'blueprint' ? buildBlueprintHTML(memory) : buildMessagingHTML(memory);
+  const title = type === 'blueprint' ? 'YouTube Brand Blueprint' : 'YouTube Messaging Guide';
 
-  const container = document.createElement('div');
-  container.innerHTML = html;
-  container.style.position = 'absolute';
-  container.style.left = '-9999px';
-  document.body.appendChild(container);
-
-  const opt = {
-    margin: [0.4, 0.5],
-    filename: type === 'blueprint' ? 'YouTube-Brand-Blueprint.pdf' : 'YouTube-Messaging-Guide.pdf',
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true },
-    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
-    pagebreak: { mode: ['css', 'legacy'], before: '.pdf-page' },
-  };
-
-  await html2pdf().set(opt).from(container).save();
-  document.body.removeChild(container);
+  // Open a new window with the PDF content and trigger print (Save as PDF)
+  const printWindow = window.open('', '_blank');
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>${title}</title>
+      <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+      ${pdfPageStyles()}
+      <style>
+        @media print {
+          body { margin: 0; padding: 0; }
+          .pdf-page { page-break-before: always; padding: 40px 50px 70px; }
+          .pdf-page:first-child { page-break-before: avoid; }
+          .no-print { display: none !important; }
+          @page { margin: 0.3in; size: letter; }
+        }
+        body { font-family: 'Nunito', Calibri, sans-serif; margin: 0; background: #f5f5f5; }
+        .print-bar { position: fixed; top: 0; left: 0; right: 0; background: #203B4F; color: #fff; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; z-index: 100; font-family: 'Nunito', sans-serif; }
+        .print-bar button { background: #CD3F42; color: #fff; border: none; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 14px; cursor: pointer; font-family: 'Nunito', sans-serif; }
+        .print-bar button:hover { background: #b5373a; }
+        .content-wrap { padding-top: 60px; }
+      </style>
+    </head>
+    <body>
+      <div class="print-bar no-print">
+        <span style="font-weight:700;">${title} — Ready to save</span>
+        <div>
+          <button onclick="window.print()">Save as PDF</button>
+          <button onclick="window.close()" style="background:transparent;border:1px solid rgba(255,255,255,0.3);margin-left:8px;">Close</button>
+        </div>
+      </div>
+      <div class="content-wrap">
+        ${html}
+      </div>
+    </body>
+    </html>
+  `);
+  printWindow.document.close();
 }
 
 // Keep old name as alias for the documents modal
