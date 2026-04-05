@@ -1035,7 +1035,7 @@ async function loadDocuments() {
     if (!bpComplete && bpSections.some(s => memory[s.key])) {
       bpAlert = `<div style="background:#FFF8E7;border:1px solid #F0D68A;border-radius:8px;padding:10px 14px;margin-bottom:12px;">
         <p style="font-size:0.8rem;font-weight:700;color:#8B6E00;margin:0 0 6px 0;">Missing sections:</p>
-        ${bpMissing.map(s => `<p style="font-size:0.78rem;color:#8B6E00;margin:0 0 2px 0;">&#9744; ${s.label} <span style="color:#B89A30;">(Step ${s.step})</span></p>`).join('')}
+        ${bpMissing.map(s => `<p style="font-size:0.78rem;color:#8B6E00;margin:0 0 2px 0;cursor:pointer;" onclick="document.getElementById('documents-modal').classList.remove('active');switchStep(${s.step});">&#9744; ${s.label} <span style="color:#B89A30;text-decoration:underline;">Go to Step ${s.step} &rarr;</span></p>`).join('')}
       </div>`;
     }
 
@@ -1073,7 +1073,7 @@ async function loadDocuments() {
     if (!mgComplete && mgSections.some(s => memory[s.key])) {
       mgAlert = `<div style="background:#FFF8E7;border:1px solid #F0D68A;border-radius:8px;padding:10px 14px;margin-bottom:12px;">
         <p style="font-size:0.8rem;font-weight:700;color:#8B6E00;margin:0 0 6px 0;">Missing sections:</p>
-        ${mgMissing.map(s => `<p style="font-size:0.78rem;color:#8B6E00;margin:0 0 2px 0;">&#9744; ${s.label}</p>`).join('')}
+        ${mgMissing.map(s => `<p style="font-size:0.78rem;color:#8B6E00;margin:0 0 2px 0;cursor:pointer;" onclick="document.getElementById('documents-modal').classList.remove('active');switchStep(5);">&#9744; ${s.label} <span style="color:#B89A30;text-decoration:underline;">Go to Step 5 &rarr;</span></p>`).join('')}
       </div>`;
     }
 
