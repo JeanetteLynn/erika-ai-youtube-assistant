@@ -575,6 +575,116 @@ function formatQuoteBox(text) {
   return `<div style="padding:16px 20px;background:#FBF8F5;border-radius:8px;border-left:3px solid #C9A77B;margin:8px 0;"><p style="font-size:14px;font-style:italic;line-height:1.7;margin:0;color:#333;">${nl2br(text)}</p></div>`;
 }
 
+// Format pipe-separated key:value pairs into a 2-column grid
+function formatKeyValueGrid(text) {
+  if (!text) return '';
+  const clean = text.replace(/^["']|["']$/g, ''); // strip wrapping quotes
+  const pairs = clean.split(/\s*\|\s*/).filter(s => s.trim());
+  if (pairs.length <= 1) return `<p style="font-size:14px;margin:0;">${nl2br(text)}</p>`;
+  return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">${pairs.map(pair => {
+    const colonIdx = pair.indexOf(':');
+    if (colonIdx === -1) return `<div style="grid-column:1/-1;padding:10px 14px;background:#FBF8F5;border-radius:8px;font-size:13px;">${pair.trim()}</div>`;
+    const label = pair.substring(0, colonIdx).trim();
+    const value = pair.substring(colonIdx + 1).trim();
+    return `<div style="padding:10px 14px;background:#FBF8F5;border-radius:8px;">
+      <p style="font-size:10px;color:#BF9476;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:0 0 2px 0;">${label}</p>
+      <p style="font-size:13px;color:#203B4F;font-weight:600;margin:0;">${value}</p>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+// Format labeled sections (Short: text | Medium: text | Long: text) into cards
+function formatLabeledSections(text) {
+  if (!text) return '';
+  const clean = text.replace(/^["']|["']$/g, '');
+  // Try splitting on pipe first
+  let sections = clean.split(/\s*\|\s*/).filter(s => s.trim());
+  // If no pipes, try splitting on label patterns (Short:, Medium:, Long:, etc.)
+  if (sections.length <= 1) {
+    sections = clean.split(/(?=(?:Short|Medium|Long|Short \(|Medium \(|Long \())/i).filter(s => s.trim());
+  }
+  if (sections.length <= 1) return formatQuoteBox(clean);
+
+  const colors = ['#C9A77B', '#BF9476', '#CD3F42'];
+  return sections.map((section, i) => {
+    const colonIdx = section.indexOf(':');
+    let label = '', body = section;
+    if (colonIdx !== -1 && colonIdx < 40) {
+      label = section.substring(0, colonIdx).trim();
+      body = section.substring(colonIdx + 1).trim();
+    }
+    const color = colors[i % colors.length];
+    return `<div style="margin-bottom:14px;padding:16px 18px;background:#fff;border-radius:10px;border:1px solid #ede7e2;border-left:4px solid ${color};">
+      ${label ? `<p style="font-size:10px;color:${color};font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin:0 0 8px 0;">${label}</p>` : ''}
+      <p style="font-size:13px;line-height:1.7;margin:0;color:#333;">${nl2br(body)}</p>
+    </div>`;
+  }).join('');
+}
+
+// Format pipe-separated items into styled bullet cards
+function formatPipeBullets(text) {
+  if (!text) return '';
+  const clean = text.replace(/^["']|["']$/g, '');
+  const items = clean.split(/\s*\|\s*/).filter(s => s.trim());
+  if (items.length <= 1) return `<p style="font-size:14px;line-height:1.8;margin:0;">${nl2br(clean)}</p>`;
+  return items.map(item => {
+    // Check for parenthetical sub-items: (1) text (2) text
+    const hasSubItems = /\(\d+\)/.test(item);
+    if (hasSubItems) {
+      const mainPart = item.split(/\(\d+\)/)[0].trim();
+      const subItems = item.match(/\(\d+\)\s*[^(]+/g) || [];
+      return `<div style="margin-bottom:12px;padding:12px 16px;background:#FBF8F5;border-radius:8px;border-left:3px solid #BF9476;">
+        ${mainPart ? `<p style="font-size:14px;font-weight:600;margin:0 0 8px 0;color:#203B4F;">${mainPart}</p>` : ''}
+        ${subItems.map(sub => {
+          const cleaned = sub.replace(/^\(\d+\)\s*/, '').trim();
+          return `<p style="font-size:13px;color:#555;margin:0 0 4px 0;padding-left:12px;">&#8226; ${cleaned}</p>`;
+        }).join('')}
+      </div>`;
+    }
+    return `<div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:10px;">
+      <span style="flex-shrink:0;width:6px;height:6px;background:#BF9476;border-radius:50%;margin-top:7px;"></span>
+      <p style="font-size:13px;line-height:1.7;margin:0;color:#333;">${item.trim()}</p>
+    </div>`;
+  }).join('');
+}
+
+// Universal smart formatter — auto-detects pattern and applies the right formatter
+function formatSmartText(text, opts = {}) {
+  if (!text) return '';
+  const { color = '#C9A77B' } = opts;
+  const clean = text.replace(/^["']|["']$/g, '').trim();
+
+  // Detect numbered list: "1. " or "1) "
+  if (/(?:^|\n)\s*\d+[\.\)]\s/.test(clean)) {
+    return formatNumberedList(clean, { color, showExplanation: true });
+  }
+  // Detect parenthetical numbers with pipe: "(1) text | (2) text" or "text | text (1) sub"
+  if (/\|/.test(clean) && /\(\d+\)/.test(clean)) {
+    return formatPipeBullets(clean);
+  }
+  // Detect pipe-separated key:value pairs
+  if (/\|/.test(clean) && /\w+:\s/.test(clean)) {
+    // Check if most items have colons (key:value) vs just occasional colons
+    const parts = clean.split(/\s*\|\s*/);
+    const withColons = parts.filter(p => /^\w[\w\s]*:/.test(p.trim())).length;
+    if (withColons > parts.length / 2) {
+      return formatKeyValueGrid(clean);
+    }
+    return formatPipeBullets(clean);
+  }
+  // Detect plain pipe-separated items
+  if (/\|/.test(clean)) {
+    return formatPipeBullets(clean);
+  }
+  // Detect comma-separated short items (power words style)
+  const commaItems = clean.split(/,\s*/);
+  if (commaItems.length >= 4 && commaItems.every(i => i.trim().split(/\s+/).length <= 5)) {
+    return formatWordChips(clean, color);
+  }
+  // Default: styled paragraph
+  return `<p style="font-size:14px;line-height:1.8;margin:0;color:#333;">${nl2br(clean)}</p>`;
+}
+
 function buildBlueprintHTML(m) {
   const name = m.userName || 'You';
   return `
@@ -611,14 +721,14 @@ function buildBlueprintHTML(m) {
       <div class="pdf-card pdf-card-warm">
         <p class="pdf-section-label">1. Your Why Statement</p>
         <p style="font-size: 17px; font-style: italic; margin: 0 0 16px 0; line-height: 1.7; color: #203B4F;">"${m.whyStatement || 'Complete Step 1 to discover your Why.'}"</p>
-        ${m.whyAnswers ? `<div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(201,167,123,0.3);"><p style="font-size: 11px; color: #BF9476; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 6px 0;">The Themes Behind Your Why</p><p style="font-size: 13px; color: #555; margin: 0; line-height: 1.7;">${nl2br(m.whyAnswers)}</p></div>` : ''}
+        ${m.whyAnswers ? `<div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(201,167,123,0.3);"><p style="font-size: 11px; color: #BF9476; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 10px 0;">The Themes Behind Your Why</p>${formatSmartText(m.whyAnswers)}</div>` : ''}
       </div>
 
       <div class="pdf-card pdf-card-plain">
         <p class="pdf-section-label">2. Your Defined Niche</p>
         <p style="font-size: 16px; font-weight: 700; margin: 0 0 8px 0; color: #203B4F;">${m.definedNiche || 'Complete Step 2 to define your niche.'}</p>
         ${m.nicheType ? `<p style="font-size: 13px; color: #888; margin: 0 0 12px 0;">Creator Type: ${m.nicheType}</p>` : ''}
-        ${m.nicheAnswers ? `<div style="margin-top: 8px; padding-top: 12px; border-top: 1px solid #ede7e2;"><p style="font-size: 11px; color: #BF9476; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 6px 0;">Why This Niche</p><p style="font-size: 13px; color: #555; margin: 0; line-height: 1.7;">${nl2br(m.nicheAnswers)}</p></div>` : ''}
+        ${m.nicheAnswers ? `<div style="margin-top: 8px; padding-top: 12px; border-top: 1px solid #ede7e2;"><p style="font-size: 11px; color: #BF9476; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 10px 0;">Why This Niche</p>${formatSmartText(m.nicheAnswers)}</div>` : ''}
       </div>
 
       ${pdfFooter('YouTube Brand Blueprint')}
@@ -636,8 +746,8 @@ function buildBlueprintHTML(m) {
 
       ${m.trueFanDemographics ? `
       <div class="pdf-card pdf-card-plain">
-        <p style="font-size: 11px; color: #BF9476; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 8px 0;">Demographics</p>
-        <p style="font-size: 13px; margin: 0; line-height: 1.8; color: #444;">${nl2br(m.trueFanDemographics)}</p>
+        <p style="font-size: 11px; color: #BF9476; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 12px 0;">Demographics</p>
+        ${formatKeyValueGrid(m.trueFanDemographics)}
       </div>` : ''}
 
       ${m.trueFanProfile ? `
@@ -648,8 +758,8 @@ function buildBlueprintHTML(m) {
 
       ${m.trueFanEmotionalTriggers ? `
       <div class="pdf-card pdf-card-red">
-        <p style="font-family: Georgia, serif; font-size: 11px; color: #CD3F42; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 8px 0;">Emotional Triggers &amp; Pain Points</p>
-        <p style="font-size: 13px; margin: 0; line-height: 1.8; color: #444;">${nl2br(m.trueFanEmotionalTriggers)}</p>
+        <p style="font-family: Georgia, serif; font-size: 11px; color: #CD3F42; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 12px 0;">Emotional Triggers &amp; Pain Points</p>
+        ${formatSmartText(m.trueFanEmotionalTriggers, { color: '#CD3F42' })}
       </div>` : ''}
 
       ${pdfFooter('YouTube Brand Blueprint')}
@@ -743,15 +853,15 @@ function buildMessagingHTML(m) {
 
       <div class="pdf-card pdf-card-warm">
         <p class="pdf-section-label">2. Channel Promise</p>
-        <p style="font-size: 11px; color: #999; margin: 0 0 8px 0;">Read this before every video. It is the heartbeat of your channel.</p>
-        <p style="font-size: 15px; margin: 0; line-height: 1.7;">${nl2br(m.channelPromise || 'Complete Step 5 to generate your channel promise.')}</p>
+        <p style="font-size: 11px; color: #999; margin: 0 0 10px 0;">Read this before every video. It is the heartbeat of your channel.</p>
+        ${m.channelPromise ? formatQuoteBox(m.channelPromise) : '<p style="font-size:14px;margin:0;">Complete Step 5 to generate your channel promise.</p>'}
       </div>
 
       ${m.videoIntroScripts ? `
       <div class="pdf-card pdf-card-plain">
         <p class="pdf-section-label-alt">3. Video Intro Scripts</p>
-        <p style="font-size: 11px; color: #999; margin: 0 0 12px 0;">Three lengths for different formats. Copy-paste into your script doc or read directly from here.</p>
-        <div style="white-space: pre-line; font-size: 13px; line-height: 1.8; color: #333;">${nl2br(m.videoIntroScripts)}</div>
+        <p style="font-size: 11px; color: #999; margin: 0 0 14px 0;">Three lengths for different formats. Copy-paste into your script doc or read directly from here.</p>
+        ${formatLabeledSections(m.videoIntroScripts)}
       </div>` : ''}
 
       ${pdfFooter('YouTube Messaging Guide')}
@@ -764,8 +874,8 @@ function buildMessagingHTML(m) {
       ${m.aboutSection ? `
       <div class="pdf-card pdf-card-tan">
         <p class="pdf-section-label-alt">4. About Section Copy</p>
-        <p style="font-size: 11px; color: #999; margin: 0 0 8px 0;">Copy this into your YouTube About section. Update the upload schedule if it changes.</p>
-        <div style="font-size: 14px; line-height: 1.8; color: #333; padding: 12px 16px; background: rgba(255,255,255,0.6); border-radius: 8px; margin-top: 8px;">${nl2br(m.aboutSection)}</div>
+        <p style="font-size: 11px; color: #999; margin: 0 0 10px 0;">Copy this into your YouTube About section. Update the upload schedule if it changes.</p>
+        ${formatQuoteBox(m.aboutSection)}
       </div>` : ''}
 
       ${m.messagingPillars ? `
