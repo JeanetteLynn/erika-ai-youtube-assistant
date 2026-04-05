@@ -172,9 +172,10 @@ async function switchStep(step) {
   loadConversation(step);
 }
 
-async function markStepComplete(step) {
-  if (!completedSteps.includes(step)) {
-    completedSteps.push(step);
+async function markStepComplete(completedStep) {
+  if (!completedSteps.includes(completedStep)) {
+    completedSteps.push(completedStep);
+    // Save completed steps but DON'T change the user's current step position
     await api('/api/progress/step', { step: currentStep, completedSteps });
     updateStepUI();
   }
@@ -261,6 +262,12 @@ async function loadConversation(step) {
 async function sendMessage(text) {
   if (isLoading) return;
   isLoading = true;
+
+  // CRITICAL: Capture the step at send time to prevent race conditions.
+  // Without this, async responses can arrive after currentStep has changed
+  // (e.g., from a progress reload), causing messages to route to wrong steps.
+  const stepAtSendTime = currentStep;
+
   document.getElementById('send-btn').disabled = true;
   clearQuickReplies();
 
@@ -271,13 +278,15 @@ async function sendMessage(text) {
   const typing = showTyping();
 
   try {
-    const res = await api('/api/chat', { message: text, step: currentStep });
+    const res = await api('/api/chat', { message: text, step: stepAtSendTime });
     typing.remove();
-    appendMessage('assistant', res.message);
 
-    // Check for step completion — ONLY mark the CURRENT step complete
-    // and ONLY when the handoff message explicitly tells the user to move on.
-    // Use strict patterns to avoid false positives from casual mentions.
+    // Only append if we're still on the same step
+    if (currentStep === stepAtSendTime) {
+      appendMessage('assistant', res.message);
+    }
+
+    // Check for step completion — ONLY mark the step we sent to
     const msg = res.message;
     const handoffPatterns = {
       1: /(?:move on to|head to|click|ready for).*(?:Step 2|Define Your Niche|Defining your Niche)/i,
@@ -286,14 +295,16 @@ async function sendMessage(text) {
       4: /(?:move on to|head to|click|ready for).*(?:Step 5|Brand Blueprint)/i,
       5: /(?:download|Download PDF|documents are complete)/i,
     };
-    const pattern = handoffPatterns[currentStep];
+    const pattern = handoffPatterns[stepAtSendTime];
     if (pattern && pattern.test(msg)) {
-      markStepComplete(currentStep);
-      if (currentStep === 5) showDownloadButtons();
+      markStepComplete(stepAtSendTime);
+      if (stepAtSendTime === 5) showDownloadButtons();
     }
   } catch (err) {
     typing.remove();
-    appendMessage('assistant', 'Sorry, something went wrong. Please try again.');
+    if (currentStep === stepAtSendTime) {
+      appendMessage('assistant', 'Sorry, something went wrong. Please try again.');
+    }
     console.error('Chat error:', err);
   }
 
