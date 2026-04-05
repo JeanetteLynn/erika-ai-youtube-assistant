@@ -525,6 +525,56 @@ function nl2br(text) {
   return text.replace(/\n/g, '<br>');
 }
 
+// Format numbered items (1. foo 2. bar) into styled list cards
+function formatNumberedList(text, opts = {}) {
+  if (!text) return '';
+  const { color = '#C9A77B', showExplanation = true } = opts;
+  // Split on numbered patterns: "1. " or "1) " at start or after newline/space
+  const items = text.split(/(?:^|\n|(?<=\.\s))(?=\d+[\.\)]\s)/).filter(s => s.trim());
+
+  if (items.length <= 1) {
+    // Not a numbered list, try splitting on numbered pattern inline
+    const inlineItems = text.split(/\s*\d+[\.\)]\s+/).filter(s => s.trim());
+    if (inlineItems.length <= 1) return `<p style="font-size:14px;line-height:1.8;margin:0;">${nl2br(text)}</p>`;
+    return inlineItems.map((item, i) => formatListItem(item, i + 1, color, showExplanation)).join('');
+  }
+  return items.map((item, i) => {
+    const cleaned = item.replace(/^\d+[\.\)]\s*/, '').trim();
+    return formatListItem(cleaned, i + 1, color, showExplanation);
+  }).join('');
+}
+
+function formatListItem(text, num, color, showExplanation) {
+  // Split on " — " or " - " to separate title from explanation
+  const dashMatch = text.match(/^(.+?)(?:\s[—–-]\s)(.+)$/);
+  if (dashMatch && showExplanation) {
+    return `<div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #f0ebe6;">
+      <span style="flex-shrink:0;width:28px;height:28px;background:${color};color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;">${num}</span>
+      <div><p style="font-size:14px;font-weight:700;margin:0 0 2px 0;color:#203B4F;">${dashMatch[1].trim()}</p><p style="font-size:12px;color:#666;margin:0;line-height:1.6;">${dashMatch[2].trim()}</p></div>
+    </div>`;
+  }
+  return `<div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:12px;">
+    <span style="flex-shrink:0;width:28px;height:28px;background:${color};color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;">${num}</span>
+    <p style="font-size:14px;margin:0;line-height:1.7;padding-top:3px;">${text.trim()}</p>
+  </div>`;
+}
+
+// Format comma-separated words into styled tags/chips
+function formatWordChips(text, color = '#BF9476') {
+  if (!text) return '';
+  const words = text.split(/,\s*/).filter(s => s.trim());
+  if (words.length <= 1) return `<p style="font-size:14px;margin:0;">${text}</p>`;
+  return `<div style="display:flex;flex-wrap:wrap;gap:8px;">${words.map(w =>
+    `<span style="display:inline-block;padding:6px 14px;background:${color}15;color:${color};border:1px solid ${color}30;border-radius:20px;font-size:13px;font-weight:600;">${w.trim()}</span>`
+  ).join('')}</div>`;
+}
+
+// Format a block of text into a styled quotebox
+function formatQuoteBox(text) {
+  if (!text) return '';
+  return `<div style="padding:16px 20px;background:#FBF8F5;border-radius:8px;border-left:3px solid #C9A77B;margin:8px 0;"><p style="font-size:14px;font-style:italic;line-height:1.7;margin:0;color:#333;">${nl2br(text)}</p></div>`;
+}
+
 function buildBlueprintHTML(m) {
   const name = m.userName || 'You';
   return `
@@ -613,19 +663,19 @@ function buildBlueprintHTML(m) {
         <p class="pdf-section-label">4. Your Mission Statements</p>
         <p style="font-size: 13px; color: #888; margin: 0 0 16px 0;">Five versions for different contexts. Copy and paste the one you need.</p>
 
-        ${m.missionBelief ? `<div class="pdf-mission-item"><p class="pdf-mission-label">A &mdash; Belief Version</p><p style="font-size: 11px; color: #999; margin: 0 0 4px 0;">Use in: manifestos, about pages, passionate pitches</p><p style="font-size: 14px; margin: 0; line-height: 1.7;">${m.missionBelief}</p></div>` : ''}
-        ${m.missionShort ? `<div class="pdf-mission-item"><p class="pdf-mission-label">B &mdash; Short Intro (15 words max)</p><p style="font-size: 11px; color: #999; margin: 0 0 4px 0;">Use in: YouTube intros, Instagram bio, elevator pitches, email signatures</p><p style="font-size: 14px; margin: 0; line-height: 1.7;">${m.missionShort}</p></div>` : ''}
-        ${m.missionMedium ? `<div class="pdf-mission-item"><p class="pdf-mission-label">C &mdash; About Section (30-45 words)</p><p style="font-size: 11px; color: #999; margin: 0 0 4px 0;">Use in: YouTube About section, social media bios, speaker introductions</p><p style="font-size: 14px; margin: 0; line-height: 1.7;">${m.missionMedium}</p></div>` : ''}
-        ${m.missionBrand ? `<div class="pdf-mission-item"><p class="pdf-mission-label">D &mdash; Brand Positioning (60-85 words)</p><p style="font-size: 11px; color: #999; margin: 0 0 4px 0;">Use in: website homepage, media kit, collaboration pitches, press bios</p><p style="font-size: 14px; margin: 0; line-height: 1.7;">${m.missionBrand}</p></div>` : ''}
-        ${m.missionCreative ? `<div class="pdf-mission-item"><p class="pdf-mission-label">E &mdash; Creative / Unique</p><p style="font-size: 11px; color: #999; margin: 0 0 4px 0;">Use in: thumbnails, hooks, social posts, merch, anywhere you want to stop scrolls</p><p style="font-size: 14px; margin: 0; font-style: italic; line-height: 1.7;">${m.missionCreative}</p></div>` : ''}
+        ${m.missionBelief ? `<div class="pdf-mission-item"><p class="pdf-mission-label">A &mdash; Belief Version</p><p style="font-size: 10px; color: #999; margin: 0 0 6px 0;">USE IN: manifestos, about pages, passionate pitches</p>${formatQuoteBox(m.missionBelief)}</div>` : ''}
+        ${m.missionShort ? `<div class="pdf-mission-item"><p class="pdf-mission-label">B &mdash; Short Intro (15 words max)</p><p style="font-size: 10px; color: #999; margin: 0 0 6px 0;">USE IN: YouTube intros, Instagram bio, elevator pitches, email signatures</p>${formatQuoteBox(m.missionShort)}</div>` : ''}
+        ${m.missionMedium ? `<div class="pdf-mission-item"><p class="pdf-mission-label">C &mdash; About Section (30-45 words)</p><p style="font-size: 10px; color: #999; margin: 0 0 6px 0;">USE IN: YouTube About section, social media bios, speaker introductions</p>${formatQuoteBox(m.missionMedium)}</div>` : ''}
+        ${m.missionBrand ? `<div class="pdf-mission-item"><p class="pdf-mission-label">D &mdash; Brand Positioning (60-85 words)</p><p style="font-size: 10px; color: #999; margin: 0 0 6px 0;">USE IN: website homepage, media kit, collaboration pitches, press bios</p>${formatQuoteBox(m.missionBrand)}</div>` : ''}
+        ${m.missionCreative ? `<div class="pdf-mission-item"><p class="pdf-mission-label">E &mdash; Creative / Unique</p><p style="font-size: 10px; color: #999; margin: 0 0 6px 0;">USE IN: thumbnails, hooks, social posts, merch, anywhere you want to stop scrolls</p>${formatQuoteBox(m.missionCreative)}</div>` : ''}
         ${!m.missionBelief ? '<p style="font-size: 14px;">Complete Step 4 to craft your mission statements.</p>' : ''}
       </div>
 
       ${m.videoIdeas ? `
       <div class="pdf-card pdf-card-red">
         <p style="font-family: Georgia, serif; font-size: 11px; color: #CD3F42; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 4px 0;">5. Your Top Video Ideas</p>
-        <p style="font-size: 11px; color: #999; margin: 0 0 10px 0;">These came directly from your True Fan's emotional triggers and frustrations. Start here.</p>
-        <p style="font-size: 14px; margin: 0; line-height: 2; white-space: pre-line;">${m.videoIdeas}</p>
+        <p style="font-size: 11px; color: #999; margin: 0 0 14px 0;">These came directly from your True Fan's emotional triggers and frustrations. Start here.</p>
+        ${formatNumberedList(m.videoIdeas, { color: '#CD3F42', showExplanation: false })}
       </div>` : ''}
 
       ${pdfFooter('YouTube Brand Blueprint')}
@@ -721,8 +771,8 @@ function buildMessagingHTML(m) {
       ${m.messagingPillars ? `
       <div class="pdf-card pdf-card-warm">
         <p class="pdf-section-label">5. Messaging Pillars</p>
-        <p style="font-size: 11px; color: #999; margin: 0 0 8px 0;">These are the core beliefs your content returns to again and again. Every video, email, and post should connect to at least one of these.</p>
-        <div style="font-size: 14px; line-height: 2; color: #333; white-space: pre-line;">${nl2br(m.messagingPillars)}</div>
+        <p style="font-size: 11px; color: #999; margin: 0 0 14px 0;">These are the core beliefs your content returns to again and again. Every video, email, and post should connect to at least one of these.</p>
+        ${formatNumberedList(m.messagingPillars, { color: '#C9A77B' })}
       </div>` : ''}
 
       ${pdfFooter('YouTube Messaging Guide')}
@@ -735,22 +785,22 @@ function buildMessagingHTML(m) {
       ${m.powerWords ? `
       <div class="pdf-card pdf-card-red">
         <p style="font-family: Georgia, serif; font-size: 11px; color: #CD3F42; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 4px 0;">6. Power Words &amp; Phrases</p>
-        <p style="font-size: 11px; color: #999; margin: 0 0 10px 0;">Weave these into your titles, thumbnails, descriptions, and scripts. These are the words that feel like YOU.</p>
-        <div style="font-size: 14px; line-height: 2; color: #333; white-space: pre-line;">${nl2br(m.powerWords)}</div>
+        <p style="font-size: 11px; color: #999; margin: 0 0 14px 0;">Weave these into your titles, thumbnails, descriptions, and scripts. These are the words that feel like YOU.</p>
+        ${formatWordChips(m.powerWords, '#CD3F42')}
       </div>` : ''}
 
       ${m.taglines ? `
       <div class="pdf-card pdf-card-plain">
         <p class="pdf-section-label">7. Taglines &amp; Signature Phrases</p>
-        <p style="font-size: 11px; color: #999; margin: 0 0 8px 0;">Use these in intros, outros, thumbnails, merch, social posts, anywhere you want to be remembered.</p>
-        <div style="font-size: 14px; line-height: 2; color: #333; white-space: pre-line;">${nl2br(m.taglines)}</div>
+        <p style="font-size: 11px; color: #999; margin: 0 0 14px 0;">Use these in intros, outros, thumbnails, merch, social posts, anywhere you want to be remembered.</p>
+        ${formatNumberedList(m.taglines, { color: '#C9A77B', showExplanation: false })}
       </div>` : ''}
 
       ${m.whatNotToSay ? `
       <div style="margin-bottom: 28px; padding: 22px 20px; background: linear-gradient(135deg, #fff5f5 0%, #fef0f0 100%); border-radius: 10px; border-left: 4px solid #CD3F42; position: relative; z-index: 1;">
         <p style="font-family: Georgia, serif; font-size: 11px; color: #CD3F42; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 4px 0;">8. What NOT to Say</p>
-        <p style="font-size: 11px; color: #999; margin: 0 0 10px 0;">These phrases undermine your brand. Avoid them in your content, emails, and conversations.</p>
-        <div style="font-size: 13px; line-height: 1.9; color: #444; white-space: pre-line;">${nl2br(m.whatNotToSay)}</div>
+        <p style="font-size: 11px; color: #999; margin: 0 0 14px 0;">These phrases undermine your brand. Avoid them in your content, emails, and conversations.</p>
+        ${formatNumberedList(m.whatNotToSay, { color: '#CD3F42', showExplanation: true })}
       </div>` : ''}
 
       <div class="pdf-card pdf-card-plain">
