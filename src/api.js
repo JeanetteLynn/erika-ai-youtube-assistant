@@ -109,12 +109,8 @@ async function handleChat(request, env, user) {
   const data = await response.json();
   const aiMessage = data.content[0].text;
 
-  // Save assistant message
-  await env.DB.prepare(
-    'INSERT INTO conversations (user_id, step, role, content) VALUES (?, ?, ?, ?)'
-  ).bind(user.id, step, 'assistant', aiMessage).run();
-
   // Check if AI wants to store memory (look for [STORE:key=value] patterns)
+  // Do this BEFORE saving so we can save the cleaned version
   const storePattern = /\[STORE:(\w+)=([\s\S]*?)\]/g;
   let match;
   while ((match = storePattern.exec(aiMessage)) !== null) {
@@ -124,8 +120,13 @@ async function handleChat(request, env, user) {
     ).bind(user.id, key, value.trim(), value.trim()).run();
   }
 
-  // Clean the store tags from the displayed message
+  // Clean the store tags — save the CLEAN version to DB so tags never appear on reload
   const cleanMessage = aiMessage.replace(/\[STORE:\w+=[\s\S]*?\]/g, '').trim();
+
+  // Save the cleaned assistant message
+  await env.DB.prepare(
+    'INSERT INTO conversations (user_id, step, role, content) VALUES (?, ?, ?, ?)'
+  ).bind(user.id, step, 'assistant', cleanMessage).run();
 
   return json({ message: cleanMessage });
 }
@@ -164,7 +165,13 @@ async function getConversations(env, user, step) {
     'SELECT role, content, created_at FROM conversations WHERE user_id = ? AND step = ? ORDER BY created_at ASC'
   ).bind(user.id, step).all();
 
-  return json({ messages: rows.results });
+  // Strip any [STORE:] tags that may exist in older messages (safety net)
+  const cleaned = rows.results.map(msg => ({
+    ...msg,
+    content: msg.content ? msg.content.replace(/\[STORE:\w+=[\s\S]*?\]/g, '').trim() : msg.content,
+  }));
+
+  return json({ messages: cleaned });
 }
 
 async function getMemory(env, user) {
