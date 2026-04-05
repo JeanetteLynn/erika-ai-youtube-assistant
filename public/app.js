@@ -275,20 +275,21 @@ async function sendMessage(text) {
     typing.remove();
     appendMessage('assistant', res.message);
 
-    // Check for step completion hints in the response
-    if (res.message.includes('locked in') || res.message.includes('complete') || res.message.includes('Congratulations')) {
-      if (res.message.includes('Step 2') || res.message.includes('Define Your Niche') || res.message.includes('Defining your Niche')) {
-        markStepComplete(1);
-      } else if (res.message.includes('Step 3') || res.message.includes('True Fan')) {
-        markStepComplete(2);
-      } else if (res.message.includes('Step 4') || res.message.includes('Mission')) {
-        markStepComplete(3);
-      } else if (res.message.includes('Step 5') || res.message.includes('Brand Blueprint')) {
-        markStepComplete(4);
-      } else if (res.message.includes('download') || res.message.includes('Download PDF')) {
-        markStepComplete(5);
-        showDownloadButtons();
-      }
+    // Check for step completion — ONLY mark the CURRENT step complete
+    // and ONLY when the handoff message explicitly tells the user to move on.
+    // Use strict patterns to avoid false positives from casual mentions.
+    const msg = res.message;
+    const handoffPatterns = {
+      1: /(?:move on to|head to|click|ready for).*(?:Step 2|Define Your Niche|Defining your Niche)/i,
+      2: /(?:move on to|head to|click|ready for).*(?:Step 3|True Fan Profiler)/i,
+      3: /(?:move on to|head to|click|ready for).*(?:Step 4|Mission Statement)/i,
+      4: /(?:move on to|head to|click|ready for).*(?:Step 5|Brand Blueprint)/i,
+      5: /(?:download|Download PDF|documents are complete)/i,
+    };
+    const pattern = handoffPatterns[currentStep];
+    if (pattern && pattern.test(msg)) {
+      markStepComplete(currentStep);
+      if (currentStep === 5) showDownloadButtons();
     }
   } catch (err) {
     typing.remove();
@@ -316,6 +317,7 @@ function appendMessage(role, content, scroll = true) {
 }
 
 function formatMessage(text) {
+  if (!text) return '';
   // Convert markdown-like formatting to HTML
   let html = text
     // Bold
