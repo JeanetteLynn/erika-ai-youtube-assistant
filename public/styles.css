@@ -4,29 +4,31 @@
    ===================================================== */
 
 :root {
-  --tan: #BF9476;
+  --tan: #C9A77B;
+  --tan-dark: #BF9476;
   --tan-light: #d4b59e;
   --tan-pale: #f0e4db;
-  --red: #CD3F42;
-  --red-hover: #b5373a;
+  --cta: #C9A77B;
+  --cta-hover: #b8956c;
   --navy: #2D3E53;
   --bg: #F5F5F5;
-  --bg-warm: #FBF8F5;
-  --mauve: #E8D5D8;
+  --bg-warm: #F2ECE9;
+  --mauve: #E0BFBD;
   --mauve-light: #f3eaec;
   --gold: #C9A77B;
   --gold-light: #e0c9a8;
-  --gray: #666666;
+  --gray: #54595F;
   --gray-light: #999;
   --white: #FFFFFF;
-  --shadow: 0 2px 12px rgba(191, 148, 118, 0.1);
-  --shadow-lg: 0 8px 32px rgba(191, 148, 118, 0.15);
-  --radius: 12px;
-  --radius-sm: 8px;
-  --radius-lg: 20px;
-  --radius-xl: 28px;
+  --shadow: 0 2px 12px rgba(45, 62, 83, 0.06);
+  --shadow-lg: 0 8px 32px rgba(45, 62, 83, 0.1);
+  --radius: 4px;
+  --radius-sm: 2px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
   --font: 'Nunito', sans-serif;
   --font-display: 'Playfair Display', Georgia, serif;
+  --font-ui: 'Roboto', 'Nunito', sans-serif;
   --transition: 0.2s ease;
 }
 
@@ -103,21 +105,21 @@ body {
 .brand-logo {
   font-family: var(--font-display);
   font-size: 2.8rem;
-  font-weight: 700;
-  font-style: italic;
+  font-weight: 400;
   color: var(--navy);
   line-height: 1.2;
   margin-bottom: 8px;
+  letter-spacing: -1px;
 }
 
 .brand-tagline {
-  font-size: 0.95rem;
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
   color: var(--tan);
   margin-bottom: 20px;
-  font-weight: 700;
+  font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-size: 0.8rem;
+  letter-spacing: 1.5px;
 }
 
 .brand-description {
@@ -129,18 +131,17 @@ body {
 .auth-card {
   flex: 1;
   background: var(--white);
-  border-radius: var(--radius-xl);
+  border-radius: 0;
   padding: 40px;
   box-shadow: var(--shadow-lg);
   max-width: 420px;
-  border: 1px solid rgba(191, 148, 118, 0.1);
 }
 
 .auth-tabs {
   display: flex;
   gap: 4px;
   background: var(--bg);
-  border-radius: var(--radius-lg);
+  border-radius: 0;
   padding: 4px;
   margin-bottom: 28px;
 }
@@ -150,13 +151,15 @@ body {
   padding: 10px;
   border: none;
   background: transparent;
-  font-family: var(--font);
-  font-size: 0.9rem;
-  font-weight: 700;
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 500;
   color: var(--gray);
   cursor: pointer;
-  border-radius: 16px;
+  border-radius: 2px;
   transition: var(--transition);
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .auth-tab.active {
@@ -183,14 +186,14 @@ body {
 .form-group input {
   width: 100%;
   padding: 13px 18px;
-  border: 2px solid #e8e0da;
-  border-radius: var(--radius-lg);
+  border: 1px solid #d4ccc6;
+  border-radius: 0;
   font-family: var(--font);
   font-size: 0.95rem;
   color: var(--navy);
   transition: var(--transition);
   outline: none;
-  background: var(--bg-warm);
+  background: var(--white);
 }
 
 .form-group input:focus {
@@ -210,26 +213,27 @@ body {
    Buttons — Erika uses brick red CTAs
    ===================================================== */
 .btn {
-  font-family: var(--font);
-  font-weight: 700;
+  font-family: var(--font-ui);
+  font-weight: 500;
   border: none;
   cursor: pointer;
-  border-radius: var(--radius-lg);
+  border-radius: 0;
   transition: var(--transition);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
 }
 
 .btn-primary {
-  background: var(--red);
+  background: var(--cta);
   color: var(--white);
-  padding: 14px 28px;
-  font-size: 0.95rem;
-  border-radius: var(--radius-xl);
+  padding: 16px 32px;
+  font-size: 0.75rem;
 }
-.btn-primary:hover { background: var(--red-hover); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(205, 63, 66, 0.3); }
+.btn-primary:hover { background: var(--cta-hover); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(201, 167, 123, 0.3); }
 
 .btn-full { width: 100%; }
 
@@ -253,15 +257,17 @@ body {
 .btn-small { font-size: 0.8rem; padding: 8px 16px; }
 
 .btn-send {
-  background: var(--red);
+  background: var(--cta);
   color: var(--white);
   width: 46px;
   height: 46px;
   border-radius: 50%;
   padding: 0;
   flex-shrink: 0;
+  text-transform: none;
+  letter-spacing: 0;
 }
-.btn-send:hover { background: var(--red-hover); box-shadow: 0 3px 10px rgba(205, 63, 66, 0.3); }
+.btn-send:hover { background: var(--cta-hover); box-shadow: 0 3px 10px rgba(201, 167, 123, 0.3); }
 .btn-send:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* =====================================================
@@ -291,9 +297,10 @@ body {
 .sidebar-brand h2 {
   font-family: var(--font-display);
   font-size: 1.4rem;
-  font-style: italic;
+  font-weight: 400;
   color: var(--navy);
   line-height: 1.3;
+  letter-spacing: -0.5px;
 }
 
 .sidebar-user {
@@ -348,8 +355,11 @@ body {
 }
 
 .step-label {
-  font-size: 0.9rem;
-  font-weight: 700;
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
 }
 
 .step-status {
@@ -380,7 +390,7 @@ body {
 
 .step-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--tan), var(--gold), #5cb85c);
+  background: linear-gradient(90deg, var(--tan-dark), var(--cta));
   border-radius: 0 4px 4px 0;
   width: 2%;
   min-width: 2%;
@@ -460,7 +470,7 @@ body {
 
 .message-bubble {
   padding: 16px 20px;
-  border-radius: var(--radius-xl);
+  border-radius: 6px;
   font-size: 0.95rem;
   line-height: 1.7;
 }
@@ -468,15 +478,15 @@ body {
 .message.assistant .message-bubble {
   background: var(--white);
   color: var(--navy);
-  border-bottom-left-radius: 6px;
-  box-shadow: 0 1px 4px rgba(191, 148, 118, 0.08);
-  border: 1px solid rgba(191, 148, 118, 0.08);
+  border-bottom-left-radius: 2px;
+  box-shadow: 0 1px 4px rgba(45, 62, 83, 0.06);
+  border: 1px solid rgba(45, 62, 83, 0.06);
 }
 
 .message.user .message-bubble {
-  background: var(--tan);
+  background: var(--cta);
   color: var(--white);
-  border-bottom-right-radius: 6px;
+  border-bottom-right-radius: 2px;
 }
 
 .message-bubble h1, .message-bubble h2, .message-bubble h3 {
@@ -508,10 +518,10 @@ body {
   gap: 6px;
   padding: 16px 20px;
   background: var(--white);
-  border-radius: var(--radius-xl);
-  border-bottom-left-radius: 6px;
+  border-radius: 6px;
+  border-bottom-left-radius: 2px;
   align-self: flex-start;
-  box-shadow: 0 1px 4px rgba(191, 148, 118, 0.08);
+  box-shadow: 0 1px 4px rgba(45, 62, 83, 0.06);
 }
 
 .typing-dot {
@@ -543,16 +553,18 @@ body {
   background: var(--mauve);
   color: var(--navy);
   border: none;
-  border-radius: 24px;
-  font-family: var(--font);
-  font-size: 0.88rem;
-  font-weight: 700;
+  border-radius: 0;
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  font-weight: 500;
   cursor: pointer;
   transition: var(--transition);
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .quick-reply:hover {
-  background: var(--tan);
+  background: var(--cta);
   color: var(--white);
 }
 
@@ -570,9 +582,9 @@ body {
 
 #chat-input {
   flex: 1;
-  padding: 14px 20px;
-  border: 2px solid #e8e0da;
-  border-radius: var(--radius-xl);
+  padding: 14px 18px;
+  border: 1px solid #d4ccc6;
+  border-radius: 0;
   font-family: var(--font);
   font-size: 0.95rem;
   color: var(--navy);
@@ -585,8 +597,8 @@ body {
 }
 
 #chat-input:focus {
-  border-color: var(--tan);
-  box-shadow: 0 0 0 3px rgba(191, 148, 118, 0.1);
+  border-color: var(--cta);
+  box-shadow: 0 0 0 2px rgba(201, 167, 123, 0.15);
 }
 
 /* =====================================================
@@ -625,7 +637,7 @@ body {
 
 .modal-content {
   background: var(--white);
-  border-radius: var(--radius-xl);
+  border-radius: 0;
   max-width: 800px;
   width: 100%;
   max-height: 85vh;
@@ -642,7 +654,7 @@ body {
   position: sticky;
   top: 0;
   background: var(--white);
-  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  border-radius: 0;
 }
 
 .modal-header h3 {
@@ -693,13 +705,12 @@ body {
 }
 
 .btn-download {
-  background: var(--tan);
+  background: var(--cta);
   color: var(--white);
-  padding: 10px 20px;
-  font-size: 0.85rem;
-  border-radius: var(--radius-lg);
+  padding: 12px 24px;
+  font-size: 0.72rem;
 }
-.btn-download:hover { background: var(--gold); }
+.btn-download:hover { background: var(--cta-hover); }
 
 .empty-state {
   text-align: center;
