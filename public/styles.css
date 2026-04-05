@@ -9,7 +9,7 @@
   --tan-pale: #f0e4db;
   --red: #CD3F42;
   --red-hover: #b5373a;
-  --navy: #203B4F;
+  --navy: #2D3E53;
   --bg: #F5F5F5;
   --bg-warm: #FBF8F5;
   --mauve: #E8D5D8;
@@ -26,7 +26,7 @@
   --radius-lg: 20px;
   --radius-xl: 28px;
   --font: 'Nunito', sans-serif;
-  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-display: 'Playfair Display', Georgia, serif;
   --transition: 0.2s ease;
 }
 
@@ -716,7 +716,7 @@ body {
   max-width: 700px;
   margin: 0 auto;
   padding: 40px;
-  color: #203B4F;
+  color: #2D3E53;
   line-height: 1.8;
 }
 
@@ -730,7 +730,7 @@ body {
 .pdf-header h1 {
   font-family: 'Georgia', serif;
   font-size: 1.8rem;
-  color: #203B4F;
+  color: #2D3E53;
   margin-bottom: 8px;
 }
 

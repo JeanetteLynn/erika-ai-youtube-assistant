@@ -426,7 +426,7 @@ async function previewPDF(type) {
   overlay.innerHTML = `
     <div style="background:#fff;border-radius:20px;max-width:820px;width:100%;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
       <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 28px;border-bottom:1px solid #ede7e2;flex-shrink:0;">
-        <h3 style="font-size:1.1rem;font-weight:800;color:#203B4F;margin:0;">${title} — Preview</h3>
+        <h3 style="font-size:1.1rem;font-weight:800;color:#2D3E53;margin:0;">${title} — Preview</h3>
         <div style="display:flex;gap:10px;align-items:center;">
           <button onclick="downloadPDF('${type}')" class="btn btn-primary" style="font-size:0.85rem;padding:10px 24px;">Download Full PDF</button>
           <button onclick="document.getElementById('pdf-preview-overlay').remove()" style="background:none;border:none;font-size:1.5rem;color:#999;cursor:pointer;padding:4px 8px;">&times;</button>
@@ -470,8 +470,8 @@ async function downloadPDF(type) {
           @page { margin: 0.3in; size: letter; }
         }
         body { font-family: 'Nunito', Calibri, sans-serif; margin: 0; background: #f5f5f5; }
-        .print-bar { position: fixed; top: 0; left: 0; right: 0; background: #203B4F; color: #fff; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; z-index: 100; font-family: 'Nunito', sans-serif; }
-        .print-bar button { background: #CD3F42; color: #fff; border: none; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 14px; cursor: pointer; font-family: 'Nunito', sans-serif; }
+        .print-bar { position: fixed; top: 0; left: 0; right: 0; background: #2D3E53; color: #fff; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; z-index: 100; font-family: 'Nunito', sans-serif; }
+        .print-bar button { background: #C9A77B; color: #fff; border: none; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 14px; cursor: pointer; font-family: 'Nunito', sans-serif; }
         .print-bar button:hover { background: #b5373a; }
         .content-wrap { padding-top: 60px; }
       </style>
@@ -499,18 +499,18 @@ async function generatePDF(type) { return previewPDF(type); }
 function pdfPageStyles() {
   return `
     <style>
-      .pdf-page { position: relative; font-family: 'Nunito', Calibri, sans-serif; color: #203B4F; line-height: 1.7; padding: 50px 55px 30px; max-width: 700px; margin: 0 auto 40px; background: #fff; border-bottom: 1px solid #ede7e2; }
+      .pdf-page { position: relative; font-family: 'Nunito', Calibri, sans-serif; color: #2D3E53; line-height: 1.7; padding: 50px 55px 30px; max-width: 700px; margin: 0 auto 40px; background: #fff; border-bottom: 1px solid #ede7e2; }
       .pdf-page:last-child { border-bottom: none; margin-bottom: 0; }
       .pdf-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.04; width: 400px; pointer-events: none; z-index: 0; }
       .pdf-footer { display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: #BF9476; border-top: 1px solid #ede7e2; padding-top: 10px; margin-top: 30px; }
       @media print { .pdf-page { margin-bottom: 0; border-bottom: none; page-break-before: always; padding-bottom: 60px; } .pdf-page:first-child { page-break-before: avoid; } .pdf-footer { position: absolute; bottom: 18px; left: 55px; right: 55px; margin-top: 0; } }
       .pdf-section-label { font-family: 'Nunito', sans-serif; font-size: 11px; color: #C9A77B; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 10px 0; font-weight: 800; }
       .pdf-section-label-alt { font-family: 'Nunito', sans-serif; font-size: 11px; color: #BF9476; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 10px 0; font-weight: 800; }
-      .pdf-card { margin-bottom: 28px; padding: 22px 20px; border-radius: 10px; position: relative; z-index: 1; }
+      .pdf-card { margin-bottom: 28px; padding: 22px 20px; border-radius: 0; position: relative; z-index: 1; }
       .pdf-card-warm { background: linear-gradient(135deg, #FBF8F5 0%, #f5ede6 100%); border-left: 4px solid #C9A77B; }
       .pdf-card-plain { background: #fff; border: 1px solid #ede7e2; }
       .pdf-card-tan { background: linear-gradient(135deg, #FBF8F5 0%, #f0e4db 100%); border-left: 4px solid #BF9476; }
-      .pdf-card-red { background: linear-gradient(135deg, #FBF8F5 0%, #f5ede6 100%); border-left: 4px solid #CD3F42; }
+      .pdf-card-accent { background: linear-gradient(135deg, #FBF8F5 0%, #f5ede6 100%); border-left: 4px solid #BF9476; }
       .pdf-mission-label { font-size: 10px; color: #BF9476; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 4px 0; }
       .pdf-mission-item { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #f0ebe6; }
       .pdf-mission-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
@@ -551,7 +551,7 @@ function formatListItem(text, num, color, showExplanation) {
   if (dashMatch && showExplanation) {
     return `<div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #f0ebe6;">
       <span style="flex-shrink:0;width:28px;height:28px;background:${color};color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;">${num}</span>
-      <div><p style="font-size:14px;font-weight:700;margin:0 0 2px 0;color:#203B4F;">${dashMatch[1].trim()}</p><p style="font-size:12px;color:#666;margin:0;line-height:1.6;">${dashMatch[2].trim()}</p></div>
+      <div><p style="font-size:14px;font-weight:700;margin:0 0 2px 0;color:#2D3E53;">${dashMatch[1].trim()}</p><p style="font-size:12px;color:#666;margin:0;line-height:1.6;">${dashMatch[2].trim()}</p></div>
     </div>`;
   }
   return `<div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:12px;">
@@ -573,7 +573,7 @@ function formatWordChips(text, color = '#BF9476') {
 // Format a block of text into a styled quotebox
 function formatQuoteBox(text) {
   if (!text) return '';
-  return `<div style="padding:16px 20px;background:#FBF8F5;border-radius:8px;border-left:3px solid #C9A77B;margin:8px 0;"><p style="font-size:14px;font-style:italic;line-height:1.7;margin:0;color:#333;">${nl2br(text)}</p></div>`;
+  return `<div style="padding:16px 20px;background:#FBF8F5;border-radius:0;border-left:3px solid #C9A77B;margin:8px 0;"><p style="font-size:14px;font-style:italic;line-height:1.7;margin:0;color:#333;">${nl2br(text)}</p></div>`;
 }
 
 // Format pipe-separated key:value pairs into a 2-column grid
@@ -589,7 +589,7 @@ function formatKeyValueGrid(text) {
     const value = pair.substring(colonIdx + 1).trim();
     return `<div style="padding:10px 14px;background:#FBF8F5;border-radius:8px;">
       <p style="font-size:10px;color:#BF9476;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:0 0 2px 0;">${label}</p>
-      <p style="font-size:13px;color:#203B4F;font-weight:600;margin:0;">${value}</p>
+      <p style="font-size:13px;color:#2D3E53;font-weight:600;margin:0;">${value}</p>
     </div>`;
   }).join('')}</div>`;
 }
@@ -606,7 +606,7 @@ function formatLabeledSections(text) {
   }
   if (sections.length <= 1) return formatQuoteBox(clean);
 
-  const colors = ['#C9A77B', '#BF9476', '#CD3F42'];
+  const colors = ['#C9A77B', '#BF9476', '#C9A77B'];
   return sections.map((section, i) => {
     const colonIdx = section.indexOf(':');
     let label = '', body = section;
@@ -635,7 +635,7 @@ function formatPipeBullets(text) {
       const mainPart = item.split(/\(\d+\)/)[0].trim();
       const subItems = item.match(/\(\d+\)\s*[^(]+/g) || [];
       return `<div style="margin-bottom:12px;padding:12px 16px;background:#FBF8F5;border-radius:8px;border-left:3px solid #BF9476;">
-        ${mainPart ? `<p style="font-size:14px;font-weight:600;margin:0 0 8px 0;color:#203B4F;">${mainPart}</p>` : ''}
+        ${mainPart ? `<p style="font-size:14px;font-weight:600;margin:0 0 8px 0;color:#2D3E53;">${mainPart}</p>` : ''}
         ${subItems.map(sub => {
           const cleaned = sub.replace(/^\(\d+\)\s*/, '').trim();
           return `<p style="font-size:13px;color:#555;margin:0 0 4px 0;padding-left:12px;">&#8226; ${cleaned}</p>`;
@@ -685,7 +685,7 @@ function formatProfileParagraph(text) {
   }
 
   // Render only categories that have content
-  const colors = ['#BF9476', '#C9A77B', '#CD3F42', '#BF9476', '#C9A77B', '#CD3F42', '#203B4F'];
+  const colors = ['#BF9476', '#C9A77B', '#C9A77B', '#BF9476', '#C9A77B', '#C9A77B', '#2D3E53'];
   let colorIdx = 0;
   let html = '';
   for (const [label, cat] of Object.entries(categories)) {
@@ -746,9 +746,9 @@ function buildBlueprintHTML(m) {
     <div class="pdf-page" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; min-height: 750px;">
       <img src="/assets/erika-logo.png" alt="Erika Vieira" style="height: 55px; margin-bottom: 24px;" crossorigin="anonymous">
       <img class="pdf-watermark" src="/assets/erika-logo.png" alt="" crossorigin="anonymous">
-      <h1 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 36px; color: #203B4F; margin: 0 0 8px 0; letter-spacing: 1px;">YouTube Brand Blueprint</h1>
+      <h1 style="font-family: 'Playfair Display', Georgia, serif; font-size: 36px; color: #2D3E53; margin: 0 0 8px 0; letter-spacing: 1px;">YouTube Brand Blueprint</h1>
       <div style="width: 60px; height: 3px; background: #C9A77B; margin: 0 auto 20px;"></div>
-      <p style="font-size: 16px; color: #666; margin: 0 0 32px 0;">Prepared exclusively for <strong style="color: #203B4F;">${name}</strong></p>
+      <p style="font-size: 16px; color: #666; margin: 0 0 32px 0;">Prepared exclusively for <strong style="color: #2D3E53;">${name}</strong></p>
       <div style="max-width: 440px; margin: 0 auto;">
         <p style="font-size: 14px; color: #666; line-height: 1.8;">This blueprint is the complete foundation of your YouTube brand, built from your answers across five guided sessions with Aria. Inside you will find your Why Statement, your defined niche, your complete True Fan profile, all five of your mission statement versions, and your top video ideas.</p>
         <p style="font-size: 14px; color: #666; line-height: 1.8; margin-top: 16px;">Keep this document open every time you plan content, write a description, design a thumbnail, update your channel, or pitch a collaboration. This is your north star.</p>
@@ -772,13 +772,13 @@ function buildBlueprintHTML(m) {
 
       <div class="pdf-card pdf-card-warm">
         <p class="pdf-section-label">1. Your Why Statement</p>
-        <p style="font-size: 17px; font-style: italic; margin: 0 0 16px 0; line-height: 1.7; color: #203B4F;">"${m.whyStatement || 'Complete Step 1 to discover your Why.'}"</p>
+        <p style="font-size: 17px; font-style: italic; margin: 0 0 16px 0; line-height: 1.7; color: #2D3E53;">"${m.whyStatement || 'Complete Step 1 to discover your Why.'}"</p>
         ${m.whyAnswers ? `<div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(201,167,123,0.3);"><p style="font-size: 11px; color: #BF9476; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 10px 0;">The Themes Behind Your Why</p>${formatSmartText(m.whyAnswers)}</div>` : ''}
       </div>
 
       <div class="pdf-card pdf-card-plain">
         <p class="pdf-section-label">2. Your Defined Niche</p>
-        <p style="font-size: 16px; font-weight: 700; margin: 0 0 8px 0; color: #203B4F;">${m.definedNiche || 'Complete Step 2 to define your niche.'}</p>
+        <p style="font-size: 16px; font-weight: 700; margin: 0 0 8px 0; color: #2D3E53;">${m.definedNiche || 'Complete Step 2 to define your niche.'}</p>
         ${m.nicheType ? `<p style="font-size: 13px; color: #888; margin: 0 0 12px 0;">Creator Type: ${m.nicheType}</p>` : ''}
         ${m.nicheAnswers ? `<div style="margin-top: 8px; padding-top: 12px; border-top: 1px solid #ede7e2;"><p style="font-size: 11px; color: #BF9476; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 10px 0;">Why This Niche</p>${formatSmartText(m.nicheAnswers)}</div>` : ''}
       </div>
@@ -792,7 +792,7 @@ function buildBlueprintHTML(m) {
 
       <div class="pdf-card pdf-card-tan" style="margin-bottom: 20px;">
         <p class="pdf-section-label-alt">3. Your True Fan</p>
-        <p style="font-size: 15px; font-weight: 700; margin: 0 0 4px 0; color: #203B4F;">True Fan Statement</p>
+        <p style="font-size: 15px; font-weight: 700; margin: 0 0 4px 0; color: #2D3E53;">True Fan Statement</p>
         ${m.trueFanStatement ? `<p style="font-size: 14px; margin: 0; line-height: 1.7;">${nl2br(m.trueFanStatement)}</p>` : '<p>Complete Step 3.</p>'}
       </div>
 
@@ -809,9 +809,9 @@ function buildBlueprintHTML(m) {
       </div>` : ''}
 
       ${m.trueFanEmotionalTriggers ? `
-      <div class="pdf-card pdf-card-red">
-        <p style="font-family: Georgia, serif; font-size: 11px; color: #CD3F42; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 12px 0;">Emotional Triggers &amp; Pain Points</p>
-        ${formatSmartText(m.trueFanEmotionalTriggers, { color: '#CD3F42' })}
+      <div class="pdf-card pdf-card-accent">
+        <p style="font-family: Georgia, serif; font-size: 11px; color: #C9A77B; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 12px 0;">Emotional Triggers &amp; Pain Points</p>
+        ${formatSmartText(m.trueFanEmotionalTriggers, { color: '#C9A77B' })}
       </div>` : ''}
 
       ${pdfFooter('YouTube Brand Blueprint')}
@@ -834,10 +834,10 @@ function buildBlueprintHTML(m) {
       </div>
 
       ${m.videoIdeas ? `
-      <div class="pdf-card pdf-card-red">
-        <p style="font-family: Georgia, serif; font-size: 11px; color: #CD3F42; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 4px 0;">5. Your Top Video Ideas</p>
+      <div class="pdf-card pdf-card-accent">
+        <p style="font-family: Georgia, serif; font-size: 11px; color: #C9A77B; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 4px 0;">5. Your Top Video Ideas</p>
         <p style="font-size: 11px; color: #999; margin: 0 0 14px 0;">These came directly from your True Fan's emotional triggers and frustrations. Start here.</p>
-        ${formatNumberedList(m.videoIdeas, { color: '#CD3F42', showExplanation: false })}
+        ${formatNumberedList(m.videoIdeas, { color: '#C9A77B', showExplanation: false })}
       </div>` : ''}
 
       ${pdfFooter('YouTube Brand Blueprint')}
@@ -847,10 +847,10 @@ function buildBlueprintHTML(m) {
     <div class="pdf-page" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; min-height: 750px;">
       <img class="pdf-watermark" src="/assets/erika-logo.png" alt="" crossorigin="anonymous">
       <img src="/assets/erika-headshot.png" alt="Erika Vieira" style="width: 180px; height: 180px; border-radius: 50%; object-fit: cover; object-position: center top; margin-bottom: 24px; border: 4px solid #C9A77B;" crossorigin="anonymous">
-      <h2 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 28px; color: #203B4F; margin: 0 0 12px 0;">Ready to Bring This Blueprint to Life?</h2>
+      <h2 style="font-family: 'Playfair Display', Georgia, serif; font-size: 28px; color: #2D3E53; margin: 0 0 12px 0;">Ready to Bring This Blueprint to Life?</h2>
       <div style="width: 40px; height: 3px; background: #C9A77B; margin: 0 auto 20px;"></div>
-      <p style="font-size: 14px; color: #666; line-height: 1.8; max-width: 420px; margin: 0 auto 24px;">Your brand foundation is set. Now it is time to build the channel. Inside the <strong style="color: #203B4F;">Zero to Influence YouTube Bootcamp</strong>, I will walk you through everything: content strategy, thumbnails, growth systems, monetization, and the mindset to keep going when it gets hard.</p>
-      <a href="https://masterclass.erikavieira.net/bootcamp-waitlist" style="display: inline-block; background: #CD3F42; color: #fff; font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 700; padding: 14px 32px; border-radius: 30px; text-decoration: none; letter-spacing: 0.5px;">JOIN THE BOOTCAMP WAITLIST &rarr;</a>
+      <p style="font-size: 14px; color: #666; line-height: 1.8; max-width: 420px; margin: 0 auto 24px;">Your brand foundation is set. Now it is time to build the channel. Inside the <strong style="color: #2D3E53;">Zero to Influence YouTube Bootcamp</strong>, I will walk you through everything: content strategy, thumbnails, growth systems, monetization, and the mindset to keep going when it gets hard.</p>
+      <a href="https://masterclass.erikavieira.net/bootcamp-waitlist" style="display: inline-block; background: #C9A77B; color: #fff; font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 700; padding: 14px 32px; border-radius: 0; text-decoration: none; letter-spacing: 1.5px; text-transform: uppercase;">JOIN THE BOOTCAMP WAITLIST &rarr;</a>
       <div style="margin-top: 32px;">
         <p style="font-size: 12px; color: #BF9476; margin: 0 0 4px 0;">Follow Erika</p>
         <p style="font-size: 12px; color: #666; margin: 0;">Instagram: @youryoutubecoach &bull; YouTube: @YourYouTubeCoach</p>
@@ -870,9 +870,9 @@ function buildMessagingHTML(m) {
     <div class="pdf-page" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; min-height: 750px;">
       <img src="/assets/erika-logo.png" alt="Erika Vieira" style="height: 55px; margin-bottom: 24px;" crossorigin="anonymous">
       <img class="pdf-watermark" src="/assets/erika-logo.png" alt="" crossorigin="anonymous">
-      <h1 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 36px; color: #203B4F; margin: 0 0 8px 0; letter-spacing: 1px;">YouTube Messaging Guide</h1>
+      <h1 style="font-family: 'Playfair Display', Georgia, serif; font-size: 36px; color: #2D3E53; margin: 0 0 8px 0; letter-spacing: 1px;">YouTube Messaging Guide</h1>
       <div style="width: 60px; height: 3px; background: #C9A77B; margin: 0 auto 20px;"></div>
-      <p style="font-size: 16px; color: #666; margin: 0 0 32px 0;">Prepared exclusively for <strong style="color: #203B4F;">${name}</strong></p>
+      <p style="font-size: 16px; color: #666; margin: 0 0 32px 0;">Prepared exclusively for <strong style="color: #2D3E53;">${name}</strong></p>
       <div style="max-width: 440px; margin: 0 auto;">
         <p style="font-size: 14px; color: #666; line-height: 1.8;">This is your complete messaging toolkit, built from your brand foundation. Every word, phrase, tagline, and script inside was crafted specifically for you and your True Fan. This is not generic advice. This is YOUR voice, distilled and ready to use.</p>
         <p style="font-size: 14px; color: #666; line-height: 1.8; margin-top: 16px;">Keep this document open every time you write a title, film an intro, draft a description, send an email, or post on social media. Consistency builds trust, and trust builds a community.</p>
@@ -897,9 +897,9 @@ function buildMessagingHTML(m) {
     <div class="pdf-page">
       <img class="pdf-watermark" src="/assets/erika-logo.png" alt="" crossorigin="anonymous">
 
-      <div style="margin-bottom: 28px; padding: 28px 24px; background: linear-gradient(135deg, #203B4F 0%, #2d5068 100%); border-radius: 10px; text-align: center;">
+      <div style="margin-bottom: 28px; padding: 28px 24px; background: linear-gradient(135deg, #2D3E53 0%, #2d5068 100%); border-radius: 0; text-align: center;">
         <p style="font-size: 10px; color: #C9A77B; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 8px 0;">1. Your Channel Banner</p>
-        <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 24px; color: #fff; margin: 0; font-style: italic;">"${m.channelBanner || 'Complete Step 5'}"</p>
+        <p style="font-family: 'Playfair Display', Georgia, serif; font-size: 24px; color: #fff; margin: 0; font-style: italic;">"${m.channelBanner || 'Complete Step 5'}"</p>
         <p style="font-size: 11px; color: rgba(255,255,255,0.5); margin: 8px 0 0 0;">Copy this text directly onto your YouTube banner image.</p>
       </div>
 
@@ -945,10 +945,10 @@ function buildMessagingHTML(m) {
       <img class="pdf-watermark" src="/assets/erika-logo.png" alt="" crossorigin="anonymous">
 
       ${m.powerWords ? `
-      <div class="pdf-card pdf-card-red">
-        <p style="font-family: Georgia, serif; font-size: 11px; color: #CD3F42; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 4px 0;">6. Power Words &amp; Phrases</p>
+      <div class="pdf-card pdf-card-accent">
+        <p style="font-family: Georgia, serif; font-size: 11px; color: #C9A77B; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 4px 0;">6. Power Words &amp; Phrases</p>
         <p style="font-size: 11px; color: #999; margin: 0 0 14px 0;">Weave these into your titles, thumbnails, descriptions, and scripts. These are the words that feel like YOU.</p>
-        ${formatWordChips(m.powerWords, '#CD3F42')}
+        ${formatWordChips(m.powerWords, '#C9A77B')}
       </div>` : ''}
 
       ${m.taglines ? `
@@ -959,15 +959,15 @@ function buildMessagingHTML(m) {
       </div>` : ''}
 
       ${m.whatNotToSay ? `
-      <div style="margin-bottom: 28px; padding: 22px 20px; background: linear-gradient(135deg, #fff5f5 0%, #fef0f0 100%); border-radius: 10px; border-left: 4px solid #CD3F42; position: relative; z-index: 1;">
-        <p style="font-family: Georgia, serif; font-size: 11px; color: #CD3F42; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 4px 0;">8. What NOT to Say</p>
+      <div style="margin-bottom: 28px; padding: 22px 20px; background: linear-gradient(135deg, #FBF8F5 0%, #f5ede6 100%); border-radius: 10px; border-left: 4px solid #C9A77B; position: relative; z-index: 1;">
+        <p style="font-family: Georgia, serif; font-size: 11px; color: #C9A77B; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 4px 0;">8. What NOT to Say</p>
         <p style="font-size: 11px; color: #999; margin: 0 0 14px 0;">These phrases undermine your brand. Avoid them in your content, emails, and conversations.</p>
-        ${formatNumberedList(m.whatNotToSay, { color: '#CD3F42', showExplanation: true })}
+        ${formatNumberedList(m.whatNotToSay, { color: '#C9A77B', showExplanation: true })}
       </div>` : ''}
 
       <div class="pdf-card pdf-card-plain">
         <p class="pdf-section-label">9. Upload Schedule</p>
-        <p style="font-size: 16px; font-weight: 700; margin: 0; color: #203B4F;">${m.uploadFrequency || 'Not yet defined'}</p>
+        <p style="font-size: 16px; font-weight: 700; margin: 0; color: #2D3E53;">${m.uploadFrequency || 'Not yet defined'}</p>
         <p style="font-size: 12px; color: #999; margin: 6px 0 0 0;">Consistency matters more than frequency. Pick a schedule you can keep for 6 months.</p>
       </div>
 
@@ -978,10 +978,10 @@ function buildMessagingHTML(m) {
     <div class="pdf-page" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; min-height: 750px;">
       <img class="pdf-watermark" src="/assets/erika-logo.png" alt="" crossorigin="anonymous">
       <img src="/assets/erika-headshot.png" alt="Erika Vieira" style="width: 180px; height: 180px; border-radius: 50%; object-fit: cover; object-position: center top; margin-bottom: 24px; border: 4px solid #C9A77B;" crossorigin="anonymous">
-      <h2 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 28px; color: #203B4F; margin: 0 0 12px 0;">Your Words Are Ready. Your Channel Is Waiting.</h2>
+      <h2 style="font-family: 'Playfair Display', Georgia, serif; font-size: 28px; color: #2D3E53; margin: 0 0 12px 0;">Your Words Are Ready. Your Channel Is Waiting.</h2>
       <div style="width: 40px; height: 3px; background: #C9A77B; margin: 0 auto 20px;"></div>
-      <p style="font-size: 14px; color: #666; line-height: 1.8; max-width: 420px; margin: 0 auto 24px;">You have the blueprint. You have the words. Now it is time to hit record. Inside the <strong style="color: #203B4F;">Zero to Influence YouTube Bootcamp</strong>, I will help you build, grow, and monetize a channel that changes lives, starting with yours.</p>
-      <a href="https://masterclass.erikavieira.net/bootcamp-waitlist" style="display: inline-block; background: #CD3F42; color: #fff; font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 700; padding: 14px 32px; border-radius: 30px; text-decoration: none; letter-spacing: 0.5px;">JOIN THE BOOTCAMP WAITLIST &rarr;</a>
+      <p style="font-size: 14px; color: #666; line-height: 1.8; max-width: 420px; margin: 0 auto 24px;">You have the blueprint. You have the words. Now it is time to hit record. Inside the <strong style="color: #2D3E53;">Zero to Influence YouTube Bootcamp</strong>, I will help you build, grow, and monetize a channel that changes lives, starting with yours.</p>
+      <a href="https://masterclass.erikavieira.net/bootcamp-waitlist" style="display: inline-block; background: #C9A77B; color: #fff; font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 700; padding: 14px 32px; border-radius: 0; text-decoration: none; letter-spacing: 1.5px; text-transform: uppercase;">JOIN THE BOOTCAMP WAITLIST &rarr;</a>
       <div style="margin-top: 32px;">
         <p style="font-size: 12px; color: #BF9476; margin: 0 0 4px 0;">Follow Erika</p>
         <p style="font-size: 12px; color: #666; margin: 0;">Instagram: @youryoutubecoach &bull; YouTube: @YourYouTubeCoach</p>
