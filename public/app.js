@@ -781,39 +781,36 @@ async function loadDocuments() {
   const container = document.getElementById('documents-list');
   try {
     const memory = (await api('/api/memory', null, 'GET')).memory || {};
-    const hasBlueprint = memory.whyStatement && memory.definedNiche;
-    const hasMessaging = memory.brandBlueprint || memory.messagingGuide;
-
-    if (!hasBlueprint && !hasMessaging) {
-      container.innerHTML = '<p class="empty-state">Complete the steps to generate your Brand Blueprint and Messaging Guide.</p>';
-      return;
-    }
+    const hasAnyData = memory.whyStatement || memory.definedNiche || memory.trueFanStatement;
+    const hasMessagingData = memory.channelBanner || memory.videoIntroScripts || memory.messagingPillars || memory.brandBlueprint || memory.messagingGuide;
 
     container.innerHTML = '';
 
-    if (hasBlueprint) {
-      container.innerHTML += `
-        <div class="document-card">
-          <h4>YouTube Brand Blueprint</h4>
-          <p>Your Why, Niche, True Fan, and Mission Statements</p>
-          <div class="document-actions">
-            <button class="btn btn-download" onclick="generatePDF('blueprint')">Download PDF</button>
-          </div>
+    // Always show Blueprint card — it populates progressively as steps complete
+    const blueprintStatus = memory.whyStatement ? 'Ready to preview' : 'Complete Steps 1-4 to build';
+    container.innerHTML += `
+      <div class="document-card">
+        <h4>YouTube Brand Blueprint</h4>
+        <p>Your Why, Niche, True Fan, Mission Statements, and Video Ideas</p>
+        <p style="font-size:0.8rem;color:${memory.whyStatement ? '#5cb85c' : '#999'};margin-bottom:12px;">${blueprintStatus}</p>
+        <div class="document-actions">
+          <button class="btn btn-download" onclick="previewPDF('blueprint')" ${!memory.whyStatement ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}>Preview Document</button>
         </div>
-      `;
-    }
+      </div>
+    `;
 
-    if (hasMessaging) {
-      container.innerHTML += `
-        <div class="document-card">
-          <h4>YouTube Messaging Guide</h4>
-          <p>Intros, Banner, About Section, Pillars, Power Words, and More</p>
-          <div class="document-actions">
-            <button class="btn btn-download" onclick="generatePDF('messaging')">Download PDF</button>
-          </div>
+    // Always show Messaging Guide card
+    const messagingStatus = hasMessagingData ? 'Ready to preview' : 'Complete Step 5 to build';
+    container.innerHTML += `
+      <div class="document-card">
+        <h4>YouTube Messaging Guide</h4>
+        <p>Video Intros, Banner, About Section, Pillars, Power Words, Taglines, and More</p>
+        <p style="font-size:0.8rem;color:${hasMessagingData ? '#5cb85c' : '#999'};margin-bottom:12px;">${messagingStatus}</p>
+        <div class="document-actions">
+          <button class="btn btn-download" onclick="previewPDF('messaging')" ${!hasMessagingData ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}>Preview Document</button>
         </div>
-      `;
-    }
+      </div>
+    `;
   } catch (err) {
     container.innerHTML = '<p class="empty-state">Failed to load documents.</p>';
   }
