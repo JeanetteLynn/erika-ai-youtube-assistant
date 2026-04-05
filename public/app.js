@@ -648,6 +648,57 @@ function formatPipeBullets(text) {
   }).join('');
 }
 
+// Break a long profile paragraph into scannable themed sections
+function formatProfileParagraph(text) {
+  if (!text) return '';
+  const clean = text.replace(/^["']|["']$/g, '').trim();
+
+  // Split into sentences
+  const sentences = clean.split(/(?<=[.!?])\s+/).filter(s => s.trim());
+  if (sentences.length <= 2) return formatQuoteBox(clean);
+
+  // Categorize sentences by keyword detection
+  const categories = {
+    'Who She Is': { icon: '👤', keywords: /age|year.old|lives|city|suburban|educated|college|married|relationship|career|mom|woman|background|diverse/i, items: [] },
+    'Personality': { icon: '💡', keywords: /think|person|cares|resilience|decisions|running|fumes|fault|deeply/i, items: [] },
+    'Values': { icon: '✨', keywords: /matters|authenticity|family|growth|freedom|surface.level|toxic|order/i, items: [] },
+    'Lifestyle': { icon: '🎧', keywords: /yoga|journal|hiking|podcast|listen|book|read|shop|buy|lululemon|target|anthropologie|quality|invest/i, items: [] },
+    'Media & Influences': { icon: '📺', keywords: /bren|admire|unlocking|hard.things|watch|content|consume/i, items: [] },
+    'Pain Points': { icon: '🔥', keywords: /struggle|stuck|exhaust|tension|guilt|permission|selfish|can.t.win|analysis|paralysis|follow.through|tired|generic|woo|clinical|disappoint|people.pleas|boundaries|cost/i, items: [] },
+    'What She Needs': { icon: '🎯', keywords: /need|practical|warm|guidance|honor|intelligence|emotional|understand|mindset|action|unstuck|real.talk/i, items: [] },
+  };
+
+  for (const sentence of sentences) {
+    let placed = false;
+    for (const [, cat] of Object.entries(categories)) {
+      if (cat.keywords.test(sentence)) {
+        cat.items.push(sentence);
+        placed = true;
+        break;
+      }
+    }
+    if (!placed) {
+      // Put uncategorized in the first category that has items, or 'Who She Is'
+      categories['Who She Is'].items.push(sentence);
+    }
+  }
+
+  // Render only categories that have content
+  const colors = ['#BF9476', '#C9A77B', '#CD3F42', '#BF9476', '#C9A77B', '#CD3F42', '#203B4F'];
+  let colorIdx = 0;
+  let html = '';
+  for (const [label, cat] of Object.entries(categories)) {
+    if (cat.items.length === 0) continue;
+    const color = colors[colorIdx % colors.length];
+    colorIdx++;
+    html += `<div style="margin-bottom:14px;padding:12px 16px;background:#fff;border-radius:8px;border-left:3px solid ${color};">
+      <p style="font-size:10px;color:${color};font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin:0 0 6px 0;">${cat.icon} ${label}</p>
+      <p style="font-size:13px;color:#444;line-height:1.7;margin:0;">${cat.items.join(' ')}</p>
+    </div>`;
+  }
+  return html;
+}
+
 // Universal smart formatter — auto-detects pattern and applies the right formatter
 function formatSmartText(text, opts = {}) {
   if (!text) return '';
@@ -752,8 +803,8 @@ function buildBlueprintHTML(m) {
 
       ${m.trueFanProfile ? `
       <div class="pdf-card pdf-card-warm">
-        <p style="font-size: 11px; color: #C9A77B; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 8px 0;">Full Profile</p>
-        <p style="font-size: 13px; margin: 0; line-height: 1.8; color: #444;">${nl2br(m.trueFanProfile)}</p>
+        <p style="font-size: 11px; color: #C9A77B; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 12px 0;">Full Profile</p>
+        ${formatProfileParagraph(m.trueFanProfile)}
       </div>` : ''}
 
       ${m.trueFanEmotionalTriggers ? `
