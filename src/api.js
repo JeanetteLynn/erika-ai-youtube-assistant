@@ -55,10 +55,15 @@ async function handleChat(request, env, user) {
   const { message, step } = await request.json();
   if (!message || !step) return json({ error: 'Message and step are required' }, 400);
 
-  // Save user message
-  await env.DB.prepare(
-    'INSERT INTO conversations (user_id, step, role, content) VALUES (?, ?, ?, ?)'
-  ).bind(user.id, step, 'user', message).run();
+  // Check if this is a returning/system message (don't save these to history)
+  const isReturningMessage = message.startsWith('[RETURNING TO ');
+
+  // Save user message (skip system messages)
+  if (!isReturningMessage) {
+    await env.DB.prepare(
+      'INSERT INTO conversations (user_id, step, role, content) VALUES (?, ?, ?, ?)'
+    ).bind(user.id, step, 'user', message).run();
+  }
 
   // Get conversation history for this step
   const history = await env.DB.prepare(
@@ -75,14 +80,31 @@ async function handleChat(request, env, user) {
     memory[row.key] = row.value;
   }
 
+  // Always inject the user's account name so the AI never needs to ask
+  if (!memory.userName && user.name) {
+    memory.userName = user.name.split(' ')[0]; // Use first name
+  }
+
   // Build the system prompt with memory injected
   const systemPrompt = getSystemPrompt(step, memory);
 
   // Build messages for Claude
-  const messages = history.results.map(m => ({
-    role: m.role === 'user' ? 'user' : 'assistant',
-    content: m.content,
-  }));
+  let messages;
+  if (isReturningMessage) {
+    // For returning messages, only send the last few exchanges + the returning message
+    // This avoids token limits on long conversations while giving the AI enough context
+    const recent = history.results.slice(-6);
+    messages = recent.map(m => ({
+      role: m.role === 'user' ? 'user' : 'assistant',
+      content: m.content,
+    }));
+    messages.push({ role: 'user', content: message });
+  } else {
+    messages = history.results.map(m => ({
+      role: m.role === 'user' ? 'user' : 'assistant',
+      content: m.content,
+    }));
+  }
 
   // Call Claude API
   const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -123,10 +145,12 @@ async function handleChat(request, env, user) {
   // Clean the store tags — save the CLEAN version to DB so tags never appear on reload
   const cleanMessage = aiMessage.replace(/\[STORE:\w+=[\s\S]*?\]/g, '').trim();
 
-  // Save the cleaned assistant message
-  await env.DB.prepare(
-    'INSERT INTO conversations (user_id, step, role, content) VALUES (?, ?, ?, ?)'
-  ).bind(user.id, step, 'assistant', cleanMessage).run();
+  // Save the cleaned assistant message (skip responses to returning messages)
+  if (!isReturningMessage) {
+    await env.DB.prepare(
+      'INSERT INTO conversations (user_id, step, role, content) VALUES (?, ?, ?, ?)'
+    ).bind(user.id, step, 'assistant', cleanMessage).run();
+  }
 
   return json({ message: cleanMessage });
 }

@@ -8,9 +8,10 @@ let user = null;
 let currentStep = 1;
 let completedSteps = [];
 let isLoading = false;
+let isStepSwitch = false;
 
 const stepInfo = {
-  1: { title: 'Step 1: Discover Your Why', subtitle: 'Your YouTube Why is the spark that makes you magnetic, memorable, and built to last.', totalQuestions: 22 },
+  1: { title: 'Step 1: Discover Your Why', subtitle: 'Your YouTube Why is the spark that makes you magnetic, memorable, and built to last.', totalQuestions: 21 },
   2: { title: 'Step 2: Define Your Niche', subtitle: 'Find the sweet spot where your passion, skills, and audience demand meet.', totalQuestions: 15 },
   3: { title: 'Step 3: True Fan Profiler', subtitle: 'Build a vivid, detailed picture of your ideal viewer — your True Fan.', totalQuestions: 29 },
   4: { title: 'Step 4: Mission Statement', subtitle: 'Distill everything into one powerful mission statement.', totalQuestions: 5 },
@@ -166,6 +167,7 @@ function updateProgressBar() {
 async function switchStep(step) {
   if (step === currentStep) return;
   currentStep = step;
+  isStepSwitch = true;
 
   await api('/api/progress/step', { step, completedSteps });
   updateStepUI();
@@ -247,15 +249,24 @@ async function loadConversation(step) {
   try {
     const res = await api(`/api/conversations/${step}`, null, 'GET');
     if (res.messages && res.messages.length > 0) {
+      // Always show the full conversation history
       res.messages.forEach(msg => {
         appendMessage(msg.role, msg.content, false);
       });
+      // Send context-aware returning message
+      if (completedSteps.includes(step)) {
+        sendMessage("[RETURNING TO COMPLETED STEP]");
+      } else if (isStepSwitch) {
+        sendMessage("[RETURNING TO IN-PROGRESS STEP]");
+      }
     } else {
       // Start conversation with an empty message to trigger intro
       sendMessage("Hi! I'm ready to start.");
     }
+    isStepSwitch = false;
   } catch (err) {
     console.error('Failed to load conversation:', err);
+    isStepSwitch = false;
   }
 }
 
@@ -271,8 +282,10 @@ async function sendMessage(text) {
   document.getElementById('send-btn').disabled = true;
   clearQuickReplies();
 
-  // Show user message
-  appendMessage('user', text);
+  // Show user message (hide system messages from display)
+  if (!text.startsWith('[RETURNING TO ')) {
+    appendMessage('user', text);
+  }
 
   // Show typing indicator
   const typing = showTyping();

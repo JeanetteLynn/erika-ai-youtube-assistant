@@ -443,10 +443,14 @@ body {
 .chat-messages {
   flex: 1;
   overflow-y: auto;
-  padding: 28px;
+  padding: 28px 40px;
   display: flex;
   flex-direction: column;
   gap: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Message Bubbles — soft, rounded, warm */
@@ -570,8 +574,12 @@ body {
 
 /* Chat Input */
 .chat-input-area {
-  padding: 16px 28px 24px;
+  padding: 16px 40px 24px;
   background: var(--bg-warm);
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .chat-form {
