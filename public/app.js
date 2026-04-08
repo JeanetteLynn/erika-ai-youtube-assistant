@@ -316,7 +316,10 @@ async function sendMessage(text) {
   } catch (err) {
     typing.remove();
     if (currentStep === stepAtSendTime) {
-      appendMessage('assistant', 'Sorry, something went wrong. Please try again.');
+      const msg = err.message && err.message.includes('AI service')
+        ? 'Aria is temporarily unavailable. This is usually a quick fix on our end. Please try again in a few minutes, and if the issue continues, let Erika know!'
+        : 'Sorry, something went wrong. Please try again. If this keeps happening, let Erika know!';
+      appendMessage('assistant', msg);
     }
     console.error('Chat error:', err);
   }
@@ -860,10 +863,9 @@ function buildBlueprintHTML(m) {
     <div class="pdf-page" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; min-height: 750px;">
       <img class="pdf-watermark" src="/assets/erika-logo.png" alt="" crossorigin="anonymous">
       <img src="/assets/erika-headshot.png" alt="Erika Vieira" style="width: 180px; height: 180px; border-radius: 50%; object-fit: cover; object-position: center top; margin-bottom: 24px; border: 4px solid #C9A77B;" crossorigin="anonymous">
-      <h2 style="font-family: 'Playfair Display', Georgia, serif; font-size: 28px; color: #2D3E53; margin: 0 0 12px 0;">Ready to Bring This Blueprint to Life?</h2>
+      <h2 style="font-family: 'Playfair Display', Georgia, serif; font-size: 28px; color: #2D3E53; margin: 0 0 12px 0;">Your Blueprint Is Ready!</h2>
       <div style="width: 40px; height: 3px; background: #C9A77B; margin: 0 auto 20px;"></div>
-      <p style="font-size: 14px; color: #666; line-height: 1.8; max-width: 420px; margin: 0 auto 24px;">Your brand foundation is set. Now it is time to build the channel. Inside the <strong style="color: #2D3E53;">Zero to Influence YouTube Bootcamp</strong>, I will walk you through everything: content strategy, thumbnails, growth systems, monetization, and the mindset to keep going when it gets hard.</p>
-      <a href="https://masterclass.erikavieira.net/bootcamp-waitlist" style="display: inline-block; background: #C9A77B; color: #fff; font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 700; padding: 14px 32px; border-radius: 0; text-decoration: none; letter-spacing: 1.5px; text-transform: uppercase;">JOIN THE BOOTCAMP WAITLIST &rarr;</a>
+      <p style="font-size: 14px; color: #666; line-height: 1.8; max-width: 420px; margin: 0 auto 24px;">I hope this was a great experience for you! If you have any questions or want further refinement, you can bring them to one of our <strong style="color: #2D3E53;">ROI calls</strong> or ask inside the <strong style="color: #2D3E53;">Skool group</strong>. We are here to help you take this and run with it!</p>
       <div style="margin-top: 32px;">
         <p style="font-size: 12px; color: #BF9476; margin: 0 0 4px 0;">Follow Erika</p>
         <p style="font-size: 12px; color: #666; margin: 0;">Instagram: @youryoutubecoach &bull; YouTube: @YourYouTubeCoach</p>
@@ -993,8 +995,7 @@ function buildMessagingHTML(m) {
       <img src="/assets/erika-headshot.png" alt="Erika Vieira" style="width: 180px; height: 180px; border-radius: 50%; object-fit: cover; object-position: center top; margin-bottom: 24px; border: 4px solid #C9A77B;" crossorigin="anonymous">
       <h2 style="font-family: 'Playfair Display', Georgia, serif; font-size: 28px; color: #2D3E53; margin: 0 0 12px 0;">Your Words Are Ready. Your Channel Is Waiting.</h2>
       <div style="width: 40px; height: 3px; background: #C9A77B; margin: 0 auto 20px;"></div>
-      <p style="font-size: 14px; color: #666; line-height: 1.8; max-width: 420px; margin: 0 auto 24px;">You have the blueprint. You have the words. Now it is time to hit record. Inside the <strong style="color: #2D3E53;">Zero to Influence YouTube Bootcamp</strong>, I will help you build, grow, and monetize a channel that changes lives, starting with yours.</p>
-      <a href="https://masterclass.erikavieira.net/bootcamp-waitlist" style="display: inline-block; background: #C9A77B; color: #fff; font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 700; padding: 14px 32px; border-radius: 0; text-decoration: none; letter-spacing: 1.5px; text-transform: uppercase;">JOIN THE BOOTCAMP WAITLIST &rarr;</a>
+      <p style="font-size: 14px; color: #666; line-height: 1.8; max-width: 420px; margin: 0 auto 24px;">I hope this was a great experience for you! If you have any questions or want further refinement, you can bring them to one of our <strong style="color: #2D3E53;">ROI calls</strong> or ask inside the <strong style="color: #2D3E53;">Skool group</strong>. We are here to help you take this and run with it!</p>
       <div style="margin-top: 32px;">
         <p style="font-size: 12px; color: #BF9476; margin: 0 0 4px 0;">Follow Erika</p>
         <p style="font-size: 12px; color: #666; margin: 0;">Instagram: @youryoutubecoach &bull; YouTube: @YourYouTubeCoach</p>

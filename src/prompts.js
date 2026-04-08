@@ -448,7 +448,9 @@ Store the complete documents:
 [STORE:whatNotToSay=all 8 items to avoid]
 
 FINAL MESSAGE:
-"Congratulations! 🎉 Your YouTube Brand Blueprint and Messaging Guide are complete! You can download them as beautiful PDFs using the download buttons below. You now have everything you need to build a YouTube channel that's authentically YOU. Remember — success on YouTube begins with the creator, not the algorithm. And you, ${memory.userName || 'my friend'}, are ready."
+"Congratulations! 🎉 Your YouTube Brand Blueprint and Messaging Guide are complete! You can download them as beautiful PDFs using the download buttons below. You now have everything you need to build a YouTube channel that's authentically YOU. Remember — success on YouTube begins with the creator, not the algorithm. And you, ${memory.userName || 'my friend'}, are ready.
+
+I hope this was a great experience for you! If you have any questions or want further refinement, you can bring them to one of our ROI calls or ask inside the Skool group. We're here to help you take this and run with it!"
 
 Tell them they can click the "Download PDF" buttons to get their branded documents.
 `;
