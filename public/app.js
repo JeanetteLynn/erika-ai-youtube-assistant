@@ -239,6 +239,70 @@ function setupChatUI() {
       form.dispatchEvent(new Event('submit'));
     }
   });
+
+  setupVoiceInput(input);
+}
+
+function setupVoiceInput(input) {
+  const micBtn = document.getElementById('mic-btn');
+  if (!micBtn) return;
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    micBtn.style.display = 'none';
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.lang = 'en-US';
+
+  let recording = false;
+  let baseText = '';
+
+  recognition.addEventListener('result', (e) => {
+    let finalText = '';
+    let interimText = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const transcript = e.results[i][0].transcript;
+      if (e.results[i].isFinal) finalText += transcript;
+      else interimText += transcript;
+    }
+    if (finalText) baseText = (baseText + ' ' + finalText).trim();
+    input.value = (baseText + ' ' + interimText).trim();
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, 150) + 'px';
+  });
+
+  recognition.addEventListener('end', () => {
+    recording = false;
+    micBtn.classList.remove('recording');
+  });
+
+  recognition.addEventListener('error', (e) => {
+    recording = false;
+    micBtn.classList.remove('recording');
+    if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
+      alert('Microphone access was blocked. Allow it in your browser settings to use voice input.');
+    }
+  });
+
+  micBtn.addEventListener('click', () => {
+    if (recording) {
+      recognition.stop();
+    } else {
+      baseText = input.value.trim();
+      try {
+        recognition.start();
+        recording = true;
+        micBtn.classList.add('recording');
+        input.focus();
+      } catch (err) {
+        console.error('Speech recognition start failed:', err);
+      }
+    }
+  });
 }
 
 async function loadConversation(step) {

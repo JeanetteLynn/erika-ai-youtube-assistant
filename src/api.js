@@ -59,7 +59,17 @@ async function handleChat(request, env, user) {
   const isReturningMessage = message.startsWith('[RETURNING TO ');
 
   // Save user message (skip system messages)
+  // If the last message in history is also 'user' (from a previous failed attempt),
+  // replace it instead of stacking — prevents corrupted consecutive user messages
   if (!isReturningMessage) {
+    const lastMsg = await env.DB.prepare(
+      'SELECT id, role FROM conversations WHERE user_id = ? AND step = ? ORDER BY created_at DESC LIMIT 1'
+    ).bind(user.id, step).first();
+
+    if (lastMsg && lastMsg.role === 'user') {
+      await env.DB.prepare('DELETE FROM conversations WHERE id = ?').bind(lastMsg.id).run();
+    }
+
     await env.DB.prepare(
       'INSERT INTO conversations (user_id, step, role, content) VALUES (?, ?, ?, ?)'
     ).bind(user.id, step, 'user', message).run();
@@ -104,6 +114,22 @@ async function handleChat(request, env, user) {
       role: m.role === 'user' ? 'user' : 'assistant',
       content: m.content,
     }));
+  }
+
+  // Deduplicate consecutive same-role messages (safety net for any DB corruption)
+  const deduped = [];
+  for (const m of messages) {
+    if (deduped.length > 0 && deduped[deduped.length - 1].role === m.role) {
+      deduped[deduped.length - 1].content += '\n\n' + m.content;
+    } else {
+      deduped.push({ ...m });
+    }
+  }
+  messages = deduped;
+
+  // Cap conversation history to prevent token overflow on very long sessions
+  if (messages.length > 40) {
+    messages = messages.slice(-40);
   }
 
   // Call Claude API
