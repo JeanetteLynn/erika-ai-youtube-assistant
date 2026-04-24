@@ -11,10 +11,10 @@ let isLoading = false;
 let isStepSwitch = false;
 
 const stepInfo = {
-  1: { title: 'Step 1: Discover Your Why', subtitle: 'Your YouTube Why is the spark that makes you magnetic, memorable, and built to last.', totalQuestions: 21 },
-  2: { title: 'Step 2: Define Your Niche', subtitle: 'Find the sweet spot where your passion, skills, and audience demand meet.', totalQuestions: 15 },
+  1: { title: 'Step 1: Discover Your Why', subtitle: 'Your YouTube Why is the spark that makes you magnetic, memorable, and built to last.', totalQuestions: 23 },
+  2: { title: 'Step 2: Define Your Niche', subtitle: 'Find the sweet spot where your passion, skills, and audience demand meet.', totalQuestions: 24 },
   3: { title: 'Step 3: True Fan Profiler', subtitle: 'Build a vivid, detailed picture of your ideal viewer — your True Fan.', totalQuestions: 29 },
-  4: { title: 'Step 4: Mission Statement', subtitle: 'Distill everything into one powerful mission statement.', totalQuestions: 5 },
+  4: { title: 'Step 4: Mission Statement', subtitle: 'Distill everything into 6 mission statements you can use anywhere.', totalQuestions: 5 },
   5: { title: 'Step 5: Brand Blueprint', subtitle: 'Generate your personalized YouTube Brand Blueprint & Messaging Guide.', totalQuestions: 10 },
 };
 
@@ -159,9 +159,12 @@ function updateProgressBar() {
   const info = stepInfo[currentStep];
   // Count user messages in the current chat as a proxy for questions answered
   const userMessages = document.querySelectorAll('#chat-messages .message.user').length;
-  const pct = Math.min(Math.round((userMessages / info.totalQuestions) * 100), 100);
+  const current = Math.min(userMessages, info.totalQuestions);
+  const pct = Math.min(Math.round((current / info.totalQuestions) * 100), 100);
   const fill = document.getElementById('step-progress-fill');
   if (fill) fill.style.width = pct + '%';
+  const counter = document.getElementById('step-progress-counter');
+  if (counter) counter.textContent = `Question ${current} of ${info.totalQuestions}`;
 }
 
 async function switchStep(step) {
@@ -292,7 +295,11 @@ function setupVoiceInput(input) {
     if (recording) {
       recognition.stop();
     } else {
-      baseText = input.value.trim();
+      // Fresh recording each time — clear textarea and reset buffer so
+      // previous text doesn't get mixed into the new answer.
+      baseText = '';
+      input.value = '';
+      input.style.height = 'auto';
       try {
         recognition.start();
         recording = true;
